@@ -46,6 +46,7 @@ public class GameThread extends Thread {
                 //Surface is locked for rendering and a fresh canvas instance is returned that we can use.
                 canvas = this.surfaceHolder.lockCanvas();
 
+                //Across this
                 synchronized (surfaceHolder){
                     //Update element positions
                     this.gameView.update();
@@ -67,6 +68,7 @@ public class GameThread extends Thread {
             timeMillis = (System.nanoTime() - startTime) / 1000000;
             waitTime = targetTime - timeMillis;
 
+            //To keep to around 60 fps sleep the thread for a small amount of time
             try {
                 this.sleep(waitTime);
             } catch (Exception e) {}
@@ -74,9 +76,12 @@ public class GameThread extends Thread {
             totalTime += System.nanoTime() - startTime;
             frameCount++;
             if (frameCount == targetFPS){
+                //Calculate the average fps
                 averageFPS = 1000 / ((totalTime / frameCount) / 1000000);
+                //Reset the counts
                 frameCount = 0;
                 totalTime = 0;
+                //Print the fps
                 Log.v(TAG, Double.toString(averageFPS));
             }
 
@@ -84,6 +89,10 @@ public class GameThread extends Thread {
         super.run();
     }
 
+    /**
+     * Function to start and stop the thread by changing the while variable
+     * @param isRunning state to set running to
+     */
     public void setRunning(boolean isRunning){
         this.running = isRunning;
     }

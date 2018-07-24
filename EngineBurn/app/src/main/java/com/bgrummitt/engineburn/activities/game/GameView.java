@@ -1,7 +1,6 @@
 package com.bgrummitt.engineburn.activities.game;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.view.MotionEvent;
@@ -24,6 +23,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         getHolder().addCallback(this);
     }
 
+    /**
+     *
+     * @param holder
+     */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         //Create new thread class with the SurfaceHolder and context
@@ -38,9 +41,20 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         thread.start();
     }
 
+    /**
+     *
+     * @param holder
+     * @param format
+     * @param width
+     * @param height
+     */
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) { }
 
+    /**
+     *
+     * @param holder
+     */
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         //To stop the thread it may take a few attempts so we create a while loop
@@ -54,13 +68,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             }
             retry = false;
         }
-    }
-
-    /**
-     * Update function for updating the game every loop
-     */
-    public void update(){
-        game.Update();
     }
 
     /**
@@ -88,6 +95,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             canvas.drawColor(Color.WHITE);
             game.Draw(canvas);
         }
+    }
+
+    /**
+     * Update function for updating the game every loop
+     */
+    public void update(){
+        game.Update();
     }
 
 }

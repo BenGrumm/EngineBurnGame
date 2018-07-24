@@ -11,36 +11,44 @@ public class UFO {
     private Boolean isFiring;
     private int mUFOFireDistance;
 
-    public UFO(Bitmap ufoBitmap, int startingX, int startingY, int mUFOFireDistance){
+    public UFO(Bitmap ufoBitmap, int startingX, int startingY, int UFOFireDistance){
         this.ufoBitmap = ufoBitmap;
 
+        //Set the co-ordinates
         mX = startingX;
         mY = startingY;
 
-        this.mUFOFireDistance = mUFOFireDistance;
+        //Set the distance the UFO will go up when the screen is clicked
+        this.mUFOFireDistance = UFOFireDistance;
 
+        //Initialise the isFiring var
         isFiring = false;
 
-        fallStartTime = System.currentTimeMillis();
+        //Initialise the start time
+        mFallStartTime = System.currentTimeMillis();
+
     }
 
     public void Fire(){
+        //Start the firing
         isFiring = true;
-        mPercentagePassed = 0;
+        //Reset Variables
         mPercentageMoved = 0;
+        mPercentagePassed = 0;
+        //Get a new start time
         mStartTime = System.currentTimeMillis();
     }
 
     private float mPercentageMoved;
     private float mPercentagePassed;
     private long mStartTime;
-    private long fallStartTime;
+    private long mFallStartTime;
 
     public void Update(){
         if(isFiring){
-            //Get the percentage of time that has passed in a form of 0.0
+            //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
-            //Get the percentage of time that has passed since the last measurement and move the bird that percentage of the firing distance
+            //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
             mY -= ((mPercentagePassed - mPercentageMoved) * mUFOFireDistance);
             //Set the percentage that the UFO has moved on its upward journey
             mPercentageMoved = mPercentagePassed;
@@ -48,15 +56,19 @@ public class UFO {
             if(mPercentageMoved >= 1) {
                 isFiring = false;
                 mStartTime = System.currentTimeMillis();
-                fallStartTime = System.currentTimeMillis();
+                mFallStartTime = System.currentTimeMillis();
                 mPercentageMoved = 0;
             }
-        }else if(fallStartTime !=0){
-            mPercentagePassed = (System.currentTimeMillis() - fallStartTime) / 250.0f;
+        }else if(mFallStartTime !=0){
+            //Get the percentage of time (0.25 seconds) that has passed
+            mPercentagePassed = (System.currentTimeMillis() - mFallStartTime) / 250.0f;
+            //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
             mY += ((mPercentagePassed - mPercentageMoved) * mUFOFireDistance);
+            //Set the percentage that the UFO has moved on its upward journey
             mPercentageMoved = mPercentagePassed;
+            //If it has moved 100% of its journey stop the firing
             if(mPercentageMoved >= 1){
-                fallStartTime = System.currentTimeMillis();
+                mFallStartTime = System.currentTimeMillis();
                 mPercentageMoved = 0;
             }
         }

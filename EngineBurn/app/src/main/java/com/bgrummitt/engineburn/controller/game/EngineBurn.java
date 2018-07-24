@@ -13,7 +13,6 @@ public class EngineBurn {
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
-    private int mScore;
     private UFO mUFO;
 
     public EngineBurn(Resources resources){
@@ -26,10 +25,7 @@ public class EngineBurn {
 
         //Spawn the position in the middle of the screen. The bitmap is painted with the top left at the co-ordinates so the bitmap is moved
         //left half of its width and up half of its height
-        mUFO = new UFO(ufoBitmap, ((screenWidth / 2) - (ufoBitmap.getWidth() / 2)), ((screenHeight / 2) - (ufoBitmap.getHeight() / 2)), (screenHeight / 10));
-
-        //Set the score to 0
-        mScore = 0;
+        mUFO = new UFO(ufoBitmap, (screenWidth / 2) - (ufoBitmap.getWidth() / 2), (screenHeight / 2) - (ufoBitmap.getHeight() / 2), screenHeight / 10);
 
     }
 
