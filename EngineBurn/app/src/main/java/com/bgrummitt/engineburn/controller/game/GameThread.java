@@ -8,7 +8,7 @@ import com.bgrummitt.engineburn.activities.game.GameView;
 
 public class GameThread extends Thread {
 
-    private final String TAG = GameThread.class.getSimpleName();
+    final static private String TAG = GameThread.class.getSimpleName();
 
     private final SurfaceHolder surfaceHolder;
     private GameView gameView;

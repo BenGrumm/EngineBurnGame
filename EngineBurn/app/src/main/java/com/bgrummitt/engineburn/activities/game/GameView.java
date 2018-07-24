@@ -12,7 +12,7 @@ import com.bgrummitt.engineburn.controller.game.GameThread;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
-    private static final String TAG = GameView.class.getSimpleName();
+    final static private String TAG = GameView.class.getSimpleName();
 
     private GameThread thread;
     private EngineBurn game;

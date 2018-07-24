@@ -2,8 +2,11 @@ package com.bgrummitt.engineburn.controller.game;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.util.Log;
 
 public class UFO {
+
+    final static private String TAG = UFO.class.getSimpleName();
 
     private int mX;
     private int mY;
@@ -30,6 +33,8 @@ public class UFO {
     }
 
     public void Fire(){
+        //TODO Remove Testing Log
+        Log.v(TAG, "Firing Initiated");
         //Start the firing
         isFiring = true;
         //Reset Variables
