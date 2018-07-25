@@ -3,6 +3,7 @@ package com.bgrummitt.engineburn.activities.game;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,6 +17,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     private GameThread thread;
     private EngineBurn game;
+    private int[] gameSettings;
 
     public GameView(Context context){
         super(context);
@@ -29,24 +31,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        //Create new thread class with the SurfaceHolder and context
-        thread = new GameThread(getHolder(), this);
-        //Keep the inputs on this thread and not on the new one
-        setFocusable(true);
+        if(gameSettings == null) {
+            game = new EngineBurn(getResources());
+        }else{
+            game = new EngineBurn(getResources(), gameSettings[0], gameSettings[1]);
+        }
 
-        game = new EngineBurn(getResources());
-
-        //Start the games update infinite loop
-        thread.setRunning(true);
-        thread.start();
+        StartThread();
     }
 
     /**
-     *
-     * @param holder
-     * @param format
-     * @param width
-     * @param height
+     * Unused function but needed as function is abstract
      */
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) { }
@@ -57,17 +52,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        //To stop the thread it may take a few attempts so we create a while loop
-        boolean retry = true;
-        while(retry){
-            try {
-                thread.setRunning(false);
-                thread.join();
-            } catch(InterruptedException e){
-                e.printStackTrace();
-            }
-            retry = false;
-        }
+        PauseThread();
+
+        gameSettings = game.getSettings();
     }
 
     /**
@@ -94,6 +81,44 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if(canvas != null){
             canvas.drawColor(Color.WHITE);
             game.Draw(canvas);
+        }
+    }
+
+    /**
+     * Start the thread
+     */
+    public void StartThread(){
+        //Create new thread class with the SurfaceHolder and context
+        thread = new GameThread(getHolder(), this);
+        //Keep the inputs on this thread and not on the new one
+        setFocusable(true);
+        //Start the games update infinite loop
+        thread.setRunning(true);
+        thread.start();
+    }
+
+    /**
+     * Resume a paused thread
+     */
+    public void ResumeThread(){
+        game.resetTiming();
+        StartThread();
+    }
+
+    /**
+     * Stop the thread
+     */
+    public void PauseThread(){
+        //To stop the thread it may take a few attempts so we create a while loop
+        boolean retry = true;
+        while(retry){
+            try {
+                thread.setRunning(false);
+                thread.join();
+            } catch(InterruptedException e){
+                e.printStackTrace();
+            }
+            retry = false;
         }
     }
 

@@ -14,6 +14,13 @@ public class UFO {
     private Boolean isFiring;
     private int mUFOFireDistance;
 
+    /**
+     * UFO constructor
+     * @param ufoBitmap the bitmap picture of the UFO
+     * @param startingX the X position the ufo will spawn at
+     * @param startingY the Y position the ufo will spawn at
+     * @param UFOFireDistance the distance that the ufo will go upwards when the screen is pressed
+     */
     public UFO(Bitmap ufoBitmap, int startingX, int startingY, int UFOFireDistance){
         this.ufoBitmap = ufoBitmap;
 
@@ -32,6 +39,17 @@ public class UFO {
 
     }
 
+    /**
+     * Reset the timing of the fall or boost
+     */
+    public void resetTiming(){
+        //Get the current time and remove the distance moved
+        mStartTime = (long)(System.currentTimeMillis() - (mPercentageMoved * 250));
+    }
+
+    /**
+     * Function called when the screen is touched
+     */
     public void Fire(){
         //TODO Remove Testing Log
         Log.v(TAG, "Firing Initiated");
@@ -49,6 +67,9 @@ public class UFO {
     private long mStartTime;
     private long mFallStartTime;
 
+    /**
+     * Update called every game loop
+     */
     public void Update(){
         if(isFiring){
             //Get the percentage of time (0.25 seconds) that has passed
@@ -79,8 +100,27 @@ public class UFO {
         }
     }
 
+    /**
+     * Draw function called every game loop
+     * @param canvas drawn on
+     */
     public void Draw(Canvas canvas){
         canvas.drawBitmap(ufoBitmap, mX, mY, null);
     }
 
+    /**
+     * Get X Position
+     * @return X
+     */
+    public int getX() {
+        return mX;
+    }
+
+    /**
+     * Get Y Position
+     * @return Y
+     */
+    public int getY() {
+        return mY;
+    }
 }
