@@ -51,8 +51,6 @@ public class UFO {
      * Function called when the screen is touched
      */
     public void Fire(){
-        //TODO Remove Testing Log
-        Log.v(TAG, "Firing Initiated");
         //Start the firing
         isFiring = true;
         //Reset Variables
