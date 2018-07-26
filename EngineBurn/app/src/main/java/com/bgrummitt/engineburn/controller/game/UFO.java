@@ -44,7 +44,9 @@ public class UFO {
      */
     public void resetTiming(){
         //Get the current time and remove the distance moved
-        mStartTime = (long)(System.currentTimeMillis() - (mPercentageMoved * 250));
+        long tempTime = System.currentTimeMillis();
+        long tempRemove = (long)(mPercentageMoved * 250L);
+        mStartTime = (tempTime - tempRemove);
     }
 
     /**
@@ -69,9 +71,14 @@ public class UFO {
      * Update called every game loop
      */
     public void Update(){
+        Log.d(TAG, "UFO Update Occurring");
         if(isFiring){
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
+            Log.d(TAG, Long.toString(System.currentTimeMillis()));
+            Log.d(TAG, Long.toString(mStartTime));
+            Log.d(TAG, Long.toString(System.currentTimeMillis() - mStartTime));
+            Log.d(TAG, Float.toString((System.currentTimeMillis() - mStartTime) / 250.0f));
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
             mY -= ((mPercentagePassed - mPercentageMoved) * mUFOFireDistance);
             //Set the percentage that the UFO has moved on its upward journey
@@ -80,19 +87,22 @@ public class UFO {
             if(mPercentageMoved >= 1) {
                 isFiring = false;
                 mStartTime = System.currentTimeMillis();
-                mFallStartTime = System.currentTimeMillis();
                 mPercentageMoved = 0;
             }
-        }else if(mFallStartTime !=0){
+        }else if(mStartTime !=0){
             //Get the percentage of time (0.25 seconds) that has passed
-            mPercentagePassed = (System.currentTimeMillis() - mFallStartTime) / 250.0f;
+            mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
+            Log.d(TAG, Long.toString(System.currentTimeMillis()));
+            Log.d(TAG, Long.toString(mStartTime));
+            Log.d(TAG, Long.toString(System.currentTimeMillis() - mStartTime));
+            Log.d(TAG, Float.toString((System.currentTimeMillis() - mStartTime) / 250.0f));
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
             mY += ((mPercentagePassed - mPercentageMoved) * mUFOFireDistance);
             //Set the percentage that the UFO has moved on its upward journey
             mPercentageMoved = mPercentagePassed;
             //If it has moved 100% of its journey stop the firing
             if(mPercentageMoved >= 1){
-                mFallStartTime = System.currentTimeMillis();
+                mStartTime = System.currentTimeMillis();
                 mPercentageMoved = 0;
             }
         }
