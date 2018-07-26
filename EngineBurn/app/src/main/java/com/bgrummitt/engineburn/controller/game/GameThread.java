@@ -14,7 +14,7 @@ public class GameThread extends Thread {
     private GameView gameView;
     private Boolean running;
     private static Canvas canvas;
-    private int targetFPS = 10;
+    private int targetFPS = 60;
     private double averageFPS;
 
     public GameThread(SurfaceHolder surfaceHolder, GameView gameView) {

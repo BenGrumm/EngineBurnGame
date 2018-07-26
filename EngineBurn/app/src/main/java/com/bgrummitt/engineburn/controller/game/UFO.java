@@ -33,10 +33,7 @@ public class UFO {
 
         //Initialise the isFiring var
         isFiring = false;
-
-        //Initialise the start time
-        mFallStartTime = System.currentTimeMillis();
-
+        
     }
 
     /**
@@ -65,20 +62,14 @@ public class UFO {
     private float mPercentageMoved;
     private float mPercentagePassed;
     private long mStartTime;
-    private long mFallStartTime;
 
     /**
      * Update called every game loop
      */
     public void Update(){
-        Log.d(TAG, "UFO Update Occurring");
         if(isFiring){
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
-            Log.d(TAG, Long.toString(System.currentTimeMillis()));
-            Log.d(TAG, Long.toString(mStartTime));
-            Log.d(TAG, Long.toString(System.currentTimeMillis() - mStartTime));
-            Log.d(TAG, Float.toString((System.currentTimeMillis() - mStartTime) / 250.0f));
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
             mY -= ((mPercentagePassed - mPercentageMoved) * mUFOFireDistance);
             //Set the percentage that the UFO has moved on its upward journey
@@ -92,10 +83,6 @@ public class UFO {
         }else if(mStartTime !=0){
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
-            Log.d(TAG, Long.toString(System.currentTimeMillis()));
-            Log.d(TAG, Long.toString(mStartTime));
-            Log.d(TAG, Long.toString(System.currentTimeMillis() - mStartTime));
-            Log.d(TAG, Float.toString((System.currentTimeMillis() - mStartTime) / 250.0f));
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
             mY += ((mPercentagePassed - mPercentageMoved) * mUFOFireDistance);
             //Set the percentage that the UFO has moved on its upward journey
