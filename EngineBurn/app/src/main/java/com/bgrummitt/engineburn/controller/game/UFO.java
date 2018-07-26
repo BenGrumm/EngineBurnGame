@@ -33,7 +33,7 @@ public class UFO {
 
         //Initialise the isFiring var
         isFiring = false;
-        
+
     }
 
     /**
