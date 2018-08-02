@@ -99,8 +99,9 @@ public class GameActivity extends Activity {
         }else if(resultCode == 1){
             createNewGame();
         }else if(resultCode == 2){
-            createNewGame();
-            mGameSurface.StartThread();
+            finish();
+            Intent intent = new Intent(GameActivity.this, GameActivity.class);
+            startActivity(intent);
         }
     }
 }
