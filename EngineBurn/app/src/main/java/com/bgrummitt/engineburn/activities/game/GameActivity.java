@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bgrummitt.engineburn.R;
+import com.bgrummitt.engineburn.activities.gameover.GameOverActivity;
 import com.bgrummitt.engineburn.activities.pause.PauseActivity;
 
 public class GameActivity extends Activity {
@@ -26,7 +27,10 @@ public class GameActivity extends Activity {
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
-    private GameView gameSurface;
+    private GameView mGameSurface;
+    private ImageButton mImageButtonPauseGame;
+    private FrameLayout mGame;
+    private ConstraintLayout mGameWidgets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,43 +41,66 @@ public class GameActivity extends Activity {
         //Lock The Screen Orientation In Portrait Mode
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+        //Create the game
+        createNewGame();
+        setContentView(mGame);
+    }
+
+    public void createNewGame(){
         //Create a layout on top of the surface to have button in the game
-        FrameLayout game = new FrameLayout(this);
-        gameSurface = new GameView(this);
-        ConstraintLayout gameWidgets = new ConstraintLayout(this);
+        mGame = new FrameLayout(this);
+        mGameSurface = new GameView(this);
+        mGameWidgets = new ConstraintLayout(this);
 
         //Create new Image button
-        ImageButton pauseGameButton = new ImageButton(this);
+        mImageButtonPauseGame = new ImageButton(this);
         //Retrieve the pause button from the android resources
-        pauseGameButton.setImageResource(android.R.drawable.ic_media_pause);
+        mImageButtonPauseGame.setImageResource(android.R.drawable.ic_media_pause);
         //Remove the buttons background
-        pauseGameButton.setBackgroundResource(0);
+        mImageButtonPauseGame.setBackgroundResource(0);
 
         //Add the button to the constraint layout
-        gameWidgets.addView(pauseGameButton);
+        mGameWidgets.addView(mImageButtonPauseGame);
 
         //Add the layouts to the main Frame layout
-        game.addView(gameSurface);
-        game.addView(gameWidgets);
+        mGame.addView(mGameSurface);
+        mGame.addView(mGameWidgets);
 
-        //Set The Content View To A New Game
-        setContentView(game);
-
-        pauseGameButton.setOnClickListener(new View.OnClickListener() {
+        mImageButtonPauseGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.v(TAG, "Button Pressed");
-                gameSurface.PauseThread();
+                mGameSurface.PauseThread();
                 Intent intent = new Intent(GameActivity.this, PauseActivity.class);
                 startActivityForResult(intent, 0);
             }
         });
+        setContentView(mGame);
+    }
+
+    public void gameOver(){
+        startEndGame();
+        mGameSurface.PauseThread();
+    }
+
+    public void startEndGame(){
+        Log.d(TAG, "Starting Intent");
+        Intent intent = new Intent(GameActivity.this, GameOverActivity.class);
+        startActivityForResult(intent, 2);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        gameSurface.ResumeThread();
+        //If the returned code is 0 resume the game if it is 1 restart the game
+        if(resultCode == 0) {
+            mGameSurface.ResumeThread();
+        }else if(resultCode == 1){
+            createNewGame();
+        }else if(resultCode == 2){
+            createNewGame();
+            mGameSurface.StartThread();
+        }
     }
 }

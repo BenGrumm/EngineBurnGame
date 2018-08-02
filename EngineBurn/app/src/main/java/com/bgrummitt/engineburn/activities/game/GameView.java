@@ -1,6 +1,7 @@
 package com.bgrummitt.engineburn.activities.game;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.bgrummitt.engineburn.activities.gameover.GameOverActivity;
 import com.bgrummitt.engineburn.controller.game.EngineBurn;
 import com.bgrummitt.engineburn.controller.game.GameThread;
 
@@ -15,6 +17,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     final static private String TAG = GameView.class.getSimpleName();
 
+    private Context mContext;
     private GameThread thread;
     private EngineBurn game;
     private int[] gameSettings;
@@ -22,6 +25,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public GameView(Context context){
         super(context);
 
+        mContext = context;
         getHolder().addCallback(this);
     }
 
@@ -127,6 +131,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     public void update(){
         game.Update();
+
+        if(game.isCollision()){
+            GameActivity gameActivity = (GameActivity) mContext;
+            gameActivity.gameOver();
+        }
     }
 
 }

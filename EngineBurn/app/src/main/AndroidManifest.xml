@@ -17,8 +17,12 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.game.GameActivity" />
-        <activity android:name=".activities.pause.PauseActivity"
-            android:theme="@android:style/Theme.Translucent"/>
+        <activity
+            android:name=".activities.pause.PauseActivity"
+            android:theme="@style/Theme.AppCompat.Dialog.Alert" />
+        <activity
+            android:name=".activities.gameover.GameOverActivity"
+            android:theme="@style/Theme.AppCompat.Dialog.Alert"/>
     </application>
 
 </manifest>

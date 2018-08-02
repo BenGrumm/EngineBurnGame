@@ -1,8 +1,9 @@
-package com.bgrummitt.engineburn.activities.pause;
+package com.bgrummitt.engineburn.activities.gameover;
 
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -10,7 +11,9 @@ import android.widget.Button;
 
 import com.bgrummitt.engineburn.R;
 
-public class PauseActivity extends Activity {
+public class GameOverActivity extends Activity {
+
+    final static private String TAG = GameOverActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,26 +23,13 @@ public class PauseActivity extends Activity {
         //Remove notification bar
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //Set Layout
-        setContentView(R.layout.activity_pause);
+        setContentView(R.layout.activity_game_over);
 
-        //Get the buttons
-        Button mButtonResumeGame = findViewById(R.id.ResumeGameButton);
-        Button mButtonRestartGame = findViewById(R.id.RestartGameButton);
-
-        //Set the onclick listener to end activity when pressed.
-        mButtonResumeGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Set the result to 0 and finish the activity
-                setResult(0);
-                finish();
-            }
-        });
+        Button mButtonRestartGame = findViewById(R.id.restartGameButtonGameOver);
         mButtonRestartGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Set the result to 1 and finish the activity
-                setResult(1);
+                setResult(2);
                 finish();
             }
         });

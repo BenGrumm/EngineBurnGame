@@ -104,6 +104,18 @@ public class UFO {
     }
 
     /**
+     * Function to check if UFO hits floor
+     * @param floorHeight the height at which the floor is
+     * @return true if UFO hits floor
+     */
+    public boolean hitsFloor(int floorHeight){
+        if((mY + ufoBitmap.getHeight()) >= floorHeight){
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Get X Position
      * @return X
      */
