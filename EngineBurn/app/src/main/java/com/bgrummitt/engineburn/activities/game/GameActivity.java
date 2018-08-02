@@ -100,8 +100,8 @@ public class GameActivity extends Activity {
             createNewGame();
         }else if(resultCode == 2){
             finish();
-            Intent intent = new Intent(GameActivity.this, GameActivity.class);
-            startActivity(intent);
+        }else if(resultCode == 3){
+            mGameSurface.startNewGame();
         }
     }
 }

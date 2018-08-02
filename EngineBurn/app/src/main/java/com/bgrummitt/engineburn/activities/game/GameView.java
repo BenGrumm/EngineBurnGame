@@ -1,5 +1,6 @@
 package com.bgrummitt.engineburn.activities.game;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -21,12 +22,14 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     private GameThread thread;
     private EngineBurn game;
     private int[] gameSettings;
+    private int gameOverCount;
 
     public GameView(Context context){
         super(context);
 
         mContext = context;
         getHolder().addCallback(this);
+        gameOverCount = 0;
     }
 
     /**
@@ -37,7 +40,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         if(gameSettings == null) {
             game = new EngineBurn(getResources());
-        }else{
+        }else {
             game = new EngineBurn(getResources(), gameSettings[0], gameSettings[1]);
         }
 
@@ -70,6 +73,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public boolean onTouchEvent(MotionEvent event) {
         //Do something with screen touched
         game.ScreenClicked();
+
         return super.onTouchEvent(event);
     }
 
@@ -109,6 +113,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         StartThread();
     }
 
+    public void startNewGame(){
+        game = new EngineBurn(getResources());
+        gameOverCount = 0;
+    }
+
     /**
      * Stop the thread
      */
@@ -131,10 +140,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     public void update(){
         game.Update();
-
-        if(game.isCollision()){
-            GameActivity gameActivity = (GameActivity) mContext;
-            gameActivity.gameOver();
+        if(game.isGameOver() && gameOverCount == 0){
+            Log.d(TAG, "Game Over");
+            Intent intent = new Intent(mContext, GameOverActivity.class);
+            ((Activity) mContext).startActivityForResult(intent, 3);
+            gameOverCount++;
         }
     }
 

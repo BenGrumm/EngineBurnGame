@@ -29,7 +29,7 @@ public class GameOverActivity extends Activity {
         mButtonRestartGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setResult(2);
+                setResult(3);
                 finish();
             }
         });

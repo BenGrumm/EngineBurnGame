@@ -14,6 +14,7 @@ public class EngineBurn {
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
+    private Boolean isGameOver;
     private UFO  mUFO;
     private static Bitmap BitmapMoonFloor;
     private static Bitmap BitmapUFO;
@@ -31,6 +32,8 @@ public class EngineBurn {
         //Spawn the position in the middle of the screen. The bitmap is painted with the top left at the co-ordinates so the bitmap is moved
         //left half of its width and up half of its height
         mUFO = new UFO(BitmapUFO, (screenWidth / 2) - (BitmapUFO.getWidth() / 2), (screenHeight / 2) - (BitmapUFO.getHeight() / 2), screenHeight / 10);
+
+        isGameOver = false;
     }
 
     /**
@@ -46,6 +49,8 @@ public class EngineBurn {
         //Spawn the position in the middle of the screen. The bitmap is painted with the top left at the co-ordinates so the bitmap is moved
         //left half of its width and up half of its height
         mUFO = new UFO(BitmapUFO, ufoX, ufoY, screenHeight / 10);
+
+        isGameOver = false;
     }
 
     public void getBitmaps(Resources resources){
@@ -76,7 +81,12 @@ public class EngineBurn {
      * Update is called every game loop
      */
     public void Update(){
-        mUFO.Update();
+        if(!isGameOver) {
+            mUFO.Update();
+        }
+        if(!isGameOver && isCollision()){
+            isGameOver = true;
+        }
     }
 
     /**
@@ -112,6 +122,14 @@ public class EngineBurn {
      */
     public void resetTiming(){
         mUFO.resetTiming();
+    }
+
+    /**
+     * Function to check if game is over
+     * @return boolean true if game is over
+     */
+    public Boolean isGameOver(){
+        return isGameOver;
     }
 
 }
