@@ -78,17 +78,6 @@ public class GameActivity extends Activity {
         setContentView(mGame);
     }
 
-    public void gameOver(){
-        startEndGame();
-        mGameSurface.PauseThread();
-    }
-
-    public void startEndGame(){
-        Log.d(TAG, "Starting Intent");
-        Intent intent = new Intent(GameActivity.this, GameOverActivity.class);
-        startActivityForResult(intent, 2);
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -97,7 +86,8 @@ public class GameActivity extends Activity {
         if(resultCode == 0) {
             mGameSurface.ResumeThread();
         }else if(resultCode == 1){
-            createNewGame();
+            mGameSurface.ResumeThread();
+            mGameSurface.startNewGame();
         }else if(resultCode == 2){
             finish();
         }else if(resultCode == 3){
