@@ -113,6 +113,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         StartThread();
     }
 
+    /**
+     * Function to start a new game
+     */
     public void startNewGame(){
         game = new EngineBurn(getResources());
         gameOverCount = 0;

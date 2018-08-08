@@ -46,6 +46,9 @@ public class GameActivity extends Activity {
         setContentView(mGame);
     }
 
+    /**
+     * Create a new game
+     */
     public void createNewGame(){
         //Create a layout on top of the surface to have button in the game
         mGame = new FrameLayout(this);
@@ -78,6 +81,12 @@ public class GameActivity extends Activity {
         setContentView(mGame);
     }
 
+    /**
+     * Function that receives the return when a started intent finishes
+     * @param requestCode the code I asked for
+     * @param resultCode the code returned
+     * @param data An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

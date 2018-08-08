@@ -8,18 +8,23 @@ import android.util.Log;
 
 import com.bgrummitt.engineburn.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EngineBurn {
 
     final static private String TAG = EngineBurn.class.getSimpleName();
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
-    private Boolean isGameOver;
-    private UFO  mUFO;
     private static Bitmap BitmapMoonFloor;
     private static Bitmap BitmapUFO;
-
     private static int FloorHeight;
+
+    private Boolean isGameOver;
+    private UFO  mUFO;
+    private List<Obstacle> mObstacles = new ArrayList<>();
+    private int mNumberOfScreenPresses;
 
     /**
      * Default Constructor to initiate all classes with beginning settings
@@ -32,8 +37,11 @@ public class EngineBurn {
         //Spawn the position in the middle of the screen. The bitmap is painted with the top left at the co-ordinates so the bitmap is moved
         //left half of its width and up half of its height
         mUFO = new UFO(BitmapUFO, (screenWidth / 2) - (BitmapUFO.getWidth() / 2), (screenHeight / 2) - (BitmapUFO.getHeight() / 2), screenHeight / 10);
+        //Initialise the starting obstacle
+        mObstacles.add(new Obstacle(this, screenWidth - 100, 10, screenWidth / 20, 100, 500, 0));
 
         isGameOver = false;
+        mNumberOfScreenPresses = 0;
     }
 
     /**
@@ -51,8 +59,13 @@ public class EngineBurn {
         mUFO = new UFO(BitmapUFO, ufoX, ufoY, screenHeight / 10);
 
         isGameOver = false;
+        mNumberOfScreenPresses = 0;
     }
 
+    /**
+     * Function to get the bitmaps if they are currently null
+     * @param resources the android resources file
+     */
     public void getBitmaps(Resources resources){
         if(BitmapUFO == null) {
             //Get the spaceship bitmaps from the Resources Folder
@@ -74,7 +87,12 @@ public class EngineBurn {
      * Function called when the Surface View is clicked
      */
     public void ScreenClicked(){
-        mUFO.Fire();
+        if(mNumberOfScreenPresses++ == 0){
+            mObstacles.get(0).startMovement();
+            mUFO.startMovement();
+        }else {
+            mUFO.Fire();
+        }
     }
 
     /**
@@ -83,6 +101,8 @@ public class EngineBurn {
     public void Update(){
         if(!isGameOver) {
             mUFO.Update();
+            for(Obstacle obstacle : mObstacles)
+                obstacle.Update();
         }
         if(!isGameOver && isCollision()){
             isGameOver = true;
@@ -107,6 +127,9 @@ public class EngineBurn {
     public void Draw(Canvas canvas){
         canvas.drawBitmap(BitmapMoonFloor, 0, FloorHeight, null);
         mUFO.Draw(canvas);
+        for(Obstacle obstacle : mObstacles) {
+            obstacle.Draw(canvas);
+        }
     }
 
     /**
@@ -115,6 +138,25 @@ public class EngineBurn {
      */
     public int[] getSettings(){
         return new int[] {mUFO.getX(), mUFO.getY()};
+    }
+
+    /**
+     * Start Or Initiate the next obstacle
+     */
+    public void startNextObstacle(int numberCalled, int gapYPos){
+        //If the obstacle is the last in the list reset the 1st obstacles position
+        if(numberCalled == 2){
+            mObstacles.get(0).resetPosition(gapYPos);
+        }
+        //If the list is not full add a new obstacle else reset the next obstacle
+        else if(mObstacles.size() != 3) {
+            mObstacles.add(new Obstacle(this, screenWidth - 100, 10,
+                    screenWidth / 20, 100, 500, numberCalled + 1));
+            mObstacles.get(numberCalled + 1).startMovement();
+        }else{
+            mObstacles.get(numberCalled + 1).resetPosition(gapYPos);
+        }
+
     }
 
     /**

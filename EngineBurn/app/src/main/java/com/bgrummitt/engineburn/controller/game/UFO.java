@@ -115,6 +115,10 @@ public class UFO {
         return false;
     }
 
+    public void startMovement(){
+        mStartTime = System.currentTimeMillis();
+    }
+
     /**
      * Get X Position
      * @return X
