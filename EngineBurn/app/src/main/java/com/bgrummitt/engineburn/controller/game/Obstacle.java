@@ -1,6 +1,5 @@
 package com.bgrummitt.engineburn.controller.game;
 
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -8,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
+
+import java.util.Random;
 
 public class Obstacle {
 
@@ -28,6 +29,8 @@ public class Obstacle {
     private Boolean resetNextObstacle;
     private Rect topObstacle;
     private Rect bottomObstacle;
+    private Random random;
+    private int mGapSize;
 
     /**
      * Constructor function of Obstacle class
@@ -41,15 +44,17 @@ public class Obstacle {
         mContext = context;
         mX = X;
         mObstacleNumber = obstacleNumber;
+        random = new Random();
         generateNewGap(previousGapY);
         obstacleMoveDistance = givenObstacleMoveDistance;
+        mGapSize = gapSize;
+        gapDistanceMax = 500;
         isMoving = resetNextObstacle = false;
-        gapDistanceMax = gapSize;
 
         obstacleHeightClass = obstacleHeight;
         obstacleWidthClass = obstacleWidth;
-        topObstacle = new Rect(mX, (mGapY - (gapDistanceMax / 2)) - obstacleHeightClass, mX + obstacleWidthClass, mGapY - (gapDistanceMax / 2));
-        bottomObstacle = new Rect(mX, mGapY + (gapDistanceMax / 2), mX + obstacleWidthClass, mGapY + (gapDistanceMax / 2) + obstacleHeightClass);
+        topObstacle = new Rect(mX, (mGapY - (mGapSize / 2)) - obstacleHeightClass, mX + obstacleWidthClass, mGapY - (mGapSize / 2));
+        bottomObstacle = new Rect(mX, mGapY + (mGapSize / 2), mX + obstacleWidthClass, mGapY + (mGapSize / 2) + obstacleHeightClass);
     }
 
     /**
@@ -57,7 +62,16 @@ public class Obstacle {
      * @param previousGapY the gap position of the obstacle in front of this one
      */
     public void generateNewGap(int previousGapY){
-        mGapY = previousGapY;
+        int max = previousGapY + (gapDistanceMax / 2);
+        int min = previousGapY - (gapDistanceMax / 2);
+        mGapY = random.nextInt((max - min) + 1) + min;
+        //If the gap is out of bounds generate a new gapY
+        while (mGapY <= (mGapSize) || mGapY >= (screenHeight - mGapSize)){
+            mGapY = random.nextInt((max - min) + 1) + min;
+        }
+        if(gapDistanceMax <= screenHeight * 0.8){
+            gapDistanceMax += 10;
+        }
     }
 
     private float mPercentageMoved;
@@ -74,7 +88,6 @@ public class Obstacle {
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
             float movement = ((mPercentagePassed - mPercentageMoved) * obstacleMoveDistance);
             mX -= movement;
-//            Log.d(TAG, "Moving : " + movement);
             //Set the percentage that the UFO has moved on its upward journey
             mPercentageMoved = mPercentagePassed;
             //If it has moved 100% of its journey stop the firing
@@ -83,8 +96,10 @@ public class Obstacle {
                 mPercentageMoved = 0;
             }
         }
-        topObstacle.set(mX, 0, mX + obstacleWidthClass, mGapY - (gapDistanceMax / 2));
-        bottomObstacle.set(mX, mGapY + (gapDistanceMax / 2), mX + obstacleWidthClass, screenHeight);
+        //Temporary in update while the obstacles are just Rectangles
+        //TODO remove and update draw to canvas
+        topObstacle.set(mX, 0, mX + obstacleWidthClass, mGapY - (mGapSize / 2));
+        bottomObstacle.set(mX, mGapY + (mGapSize / 2), mX + obstacleWidthClass, screenHeight);
         if((mX + obstacleWidthClass) < 0){
             isMoving = false;
         }else if(!resetNextObstacle && (mX + obstacleWidthClass) < screenWidth / 2){
@@ -101,9 +116,7 @@ public class Obstacle {
         Paint paint = new Paint();
         paint.setColor(Color.RED);
         paint.setAntiAlias(true);
-        Paint paintTwo = new Paint();
-        paintTwo.setColor(Color.RED);
-        paintTwo.setAntiAlias(true);
+        Paint paintTwo = new Paint(paint);
         canvas.drawRect(topObstacle, paint);
         canvas.drawRect(bottomObstacle, paintTwo);
     }
