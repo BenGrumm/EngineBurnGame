@@ -38,7 +38,7 @@ public class EngineBurn {
         //left half of its width and up half of its height
         mUFO = new UFO(BitmapUFO, (screenWidth / 2) - (BitmapUFO.getWidth() / 2), (screenHeight / 2) - (BitmapUFO.getHeight() / 2), screenHeight / 10);
         //Initialise the starting obstacle
-        mObstacles.add(new Obstacle(this, screenWidth - 100, 10, screenWidth / 20, 100, 500, 0));
+        mObstacles.add(new Obstacle(this, screenWidth + 100 , screenHeight / 2, screenWidth / 20, 100, 500, 0, 400));
 
         isGameOver = false;
         mNumberOfScreenPresses = 0;
@@ -79,7 +79,7 @@ public class EngineBurn {
             //Get the floor png from the drawable folder
             BitmapMoonFloor = BitmapFactory.decodeResource(resources, R.drawable.moon_floor_simple);
             //Resize the bitmap
-            BitmapMoonFloor = Bitmap.createScaledBitmap(BitmapMoonFloor, screenWidth, screenHeight / 10, true);
+            BitmapMoonFloor = Bitmap.createScaledBitmap(BitmapMoonFloor, screenWidth + 100, screenHeight / 10, true);
         }
     }
 
@@ -150,8 +150,8 @@ public class EngineBurn {
         }
         //If the list is not full add a new obstacle else reset the next obstacle
         else if(mObstacles.size() != 3) {
-            mObstacles.add(new Obstacle(this, screenWidth - 100, 10,
-                    screenWidth / 20, 100, 500, numberCalled + 1));
+            mObstacles.add(new Obstacle(this, screenWidth, (screenHeight / 2),
+                    screenWidth / 20, 100, 500, numberCalled + 1, 400));
             mObstacles.get(numberCalled + 1).startMovement();
         }else{
             mObstacles.get(numberCalled + 1).resetPosition(gapYPos);
@@ -164,6 +164,9 @@ public class EngineBurn {
      */
     public void resetTiming(){
         mUFO.resetTiming();
+        for(Obstacle o : mObstacles) {
+            o.resetTiming();
+        }
     }
 
     /**

@@ -27,7 +27,7 @@ public class Obstacle {
     private Boolean isMoving;
     private Boolean resetNextObstacle;
     private Rect topObstacle;
-    private Bitmap bottomObstacle;
+    private Rect bottomObstacle;
 
     /**
      * Constructor function of Obstacle class
@@ -37,19 +37,19 @@ public class Obstacle {
      * @param obstacleWidth the width of the obstacle on the screen
      * @param obstacleHeight the height of the obstacle
      */
-    public Obstacle(EngineBurn context, int X, int previousGapY, int givenObstacleMoveDistance, int obstacleWidth, int obstacleHeight, int obstacleNumber){
+    public Obstacle(EngineBurn context, int X, int previousGapY, int givenObstacleMoveDistance, int obstacleWidth, int obstacleHeight, int obstacleNumber, int gapSize){
         mContext = context;
         mX = X;
         mObstacleNumber = obstacleNumber;
         generateNewGap(previousGapY);
         obstacleMoveDistance = givenObstacleMoveDistance;
         isMoving = resetNextObstacle = false;
+        gapDistanceMax = gapSize;
 
-        if(topObstacle == null || bottomObstacle == null){
-            obstacleHeightClass = obstacleHeight;
-            obstacleWidthClass = obstacleWidth;
-            topObstacle = new Rect(X, 0, obstacleWidth, obstacleHeight);
-        }
+        obstacleHeightClass = obstacleHeight;
+        obstacleWidthClass = obstacleWidth;
+        topObstacle = new Rect(mX, (mGapY - (gapDistanceMax / 2)) - obstacleHeightClass, mX + obstacleWidthClass, mGapY - (gapDistanceMax / 2));
+        bottomObstacle = new Rect(mX, mGapY + (gapDistanceMax / 2), mX + obstacleWidthClass, mGapY + (gapDistanceMax / 2) + obstacleHeightClass);
     }
 
     /**
@@ -72,7 +72,9 @@ public class Obstacle {
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
-            mX -= ((mPercentagePassed - mPercentageMoved) * obstacleMoveDistance);
+            float movement = ((mPercentagePassed - mPercentageMoved) * obstacleMoveDistance);
+            mX -= movement;
+//            Log.d(TAG, "Moving : " + movement);
             //Set the percentage that the UFO has moved on its upward journey
             mPercentageMoved = mPercentagePassed;
             //If it has moved 100% of its journey stop the firing
@@ -81,7 +83,8 @@ public class Obstacle {
                 mPercentageMoved = 0;
             }
         }
-        topObstacle.set(mX, 0, mX + obstacleWidthClass, obstacleHeightClass);
+        topObstacle.set(mX, 0, mX + obstacleWidthClass, mGapY - (gapDistanceMax / 2));
+        bottomObstacle.set(mX, mGapY + (gapDistanceMax / 2), mX + obstacleWidthClass, screenHeight);
         if((mX + obstacleWidthClass) < 0){
             isMoving = false;
         }else if(!resetNextObstacle && (mX + obstacleWidthClass) < screenWidth / 2){
@@ -98,7 +101,11 @@ public class Obstacle {
         Paint paint = new Paint();
         paint.setColor(Color.RED);
         paint.setAntiAlias(true);
+        Paint paintTwo = new Paint();
+        paintTwo.setColor(Color.RED);
+        paintTwo.setAntiAlias(true);
         canvas.drawRect(topObstacle, paint);
+        canvas.drawRect(bottomObstacle, paintTwo);
     }
 
     /**
@@ -120,6 +127,16 @@ public class Obstacle {
         generateNewGap(previousGapY);
         resetNextObstacle = false;
         startMovement();
+    }
+
+    /**
+     * Reset the timing of the fall or boost
+     */
+    public void resetTiming(){
+        //Get the current time and remove the distance moved
+        long tempTime = System.currentTimeMillis();
+        long tempRemove = (long)(mPercentageMoved * 250L);
+        mStartTime = (tempTime - tempRemove);
     }
 
 }
