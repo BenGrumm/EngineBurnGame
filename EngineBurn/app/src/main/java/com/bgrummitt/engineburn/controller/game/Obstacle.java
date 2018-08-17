@@ -133,7 +133,7 @@ public class Obstacle {
 
     /**
      * Reset the position of the obstacle
-     * @param previousGapY
+     * @param previousGapY the gap position of the obstacle in front
      */
     public void resetPosition(int previousGapY){
         mX = screenWidth + obstacleWidthClass;
@@ -150,6 +150,22 @@ public class Obstacle {
         long tempTime = System.currentTimeMillis();
         long tempRemove = (long)(mPercentageMoved * 250L);
         mStartTime = (tempTime - tempRemove);
+    }
+    
+    public int getObstacleWidth(){
+        return obstacleWidthClass;
+    }
+
+    public int getGapSize() {
+        return mGapSize;
+    }
+
+    public int getX() {
+        return mX;
+    }
+
+    public int getGapY(){
+        return mGapY;
     }
 
 }

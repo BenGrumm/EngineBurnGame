@@ -17,6 +17,7 @@ import com.bgrummitt.engineburn.controller.game.GameThread;
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     final static private String TAG = GameView.class.getSimpleName();
+    final static private String SCORE_EXTRA = "SCORE_EXTRA";
 
     private Context mContext;
     private GameThread thread;
@@ -41,7 +42,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if(gameSettings == null) {
             game = new EngineBurn(getResources());
         }else {
-            game = new EngineBurn(getResources(), gameSettings[0], gameSettings[1]);
+            game = new EngineBurn(getResources(), gameSettings[0], gameSettings[1], gameSettings[2]);
         }
 
         StartThread();
@@ -146,6 +147,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if(game.isGameOver() && gameOverCount == 0){
             Log.d(TAG, "Game Over");
             Intent intent = new Intent(mContext, GameOverActivity.class);
+            intent.putExtra(SCORE_EXTRA, game.getScore());
             ((Activity) mContext).startActivityForResult(intent, 3);
             gameOverCount++;
         }

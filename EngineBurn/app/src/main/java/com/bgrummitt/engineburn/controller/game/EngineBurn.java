@@ -4,6 +4,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.util.Log;
 
 import com.bgrummitt.engineburn.R;
@@ -25,6 +28,9 @@ public class EngineBurn {
     private UFO  mUFO;
     private List<Obstacle> mObstacles = new ArrayList<>();
     private int mNumberOfScreenPresses;
+    private int mScore;
+    private Paint mScoreNumberPaint;
+    private int mScoreTextSize;
 
     /**
      * Default Constructor to initiate all classes with beginning settings
@@ -47,10 +53,11 @@ public class EngineBurn {
     /**
      * Constructor with settings to game in saved positions
      * @param resources the resources from the android directory
+     * @param score the score when the game was stopped
      * @param ufoX x position of the UFO
      * @param ufoY y position of the UFO
      */
-    public EngineBurn(Resources resources, int ufoX, int ufoY){
+    public EngineBurn(Resources resources, int score, int ufoX, int ufoY){
 
         getBitmaps(resources);
 
@@ -60,6 +67,8 @@ public class EngineBurn {
 
         isGameOver = false;
         mNumberOfScreenPresses = 0;
+        mScore = score;
+        setScorePaint();
     }
 
     /**
@@ -81,6 +90,8 @@ public class EngineBurn {
             //Resize the bitmap
             BitmapMoonFloor = Bitmap.createScaledBitmap(BitmapMoonFloor, screenWidth + 100, screenHeight / 10, true);
         }
+        mScore = 0;
+        setScorePaint();
     }
 
     /**
@@ -90,6 +101,7 @@ public class EngineBurn {
         if(mNumberOfScreenPresses++ == 0){
             mObstacles.get(0).startMovement();
             mUFO.startMovement();
+            mScore = 0;
         }else {
             mUFO.Fire();
         }
@@ -114,7 +126,7 @@ public class EngineBurn {
      * @return true if UFO collides with floor or pipes
      */
     public Boolean isCollision(){
-        if(mUFO.hitsFloor(FloorHeight)){
+        if(mUFO.hitsFloor(FloorHeight) || mUFO.collidesWithObstacle(mObstacles)){
             return true;
         }
         return false;
@@ -125,11 +137,21 @@ public class EngineBurn {
      * @param canvas the canvas to draw on
      */
     public void Draw(Canvas canvas){
-        canvas.drawBitmap(BitmapMoonFloor, 0, FloorHeight, null);
         mUFO.Draw(canvas);
         for(Obstacle obstacle : mObstacles) {
             obstacle.Draw(canvas);
         }
+        canvas.drawText(Integer.toString(mScore), screenWidth / 2, screenHeight / 10, mScoreNumberPaint);
+        canvas.drawBitmap(BitmapMoonFloor, 0, FloorHeight, null);
+    }
+
+    public void setScorePaint(){
+        mScoreNumberPaint = new Paint();
+        mScoreNumberPaint.setColor(Color.BLACK);
+        mScoreNumberPaint.setStyle(Paint.Style.FILL);
+        mScoreTextSize = screenWidth / 10;
+        mScoreNumberPaint.setTextSize(mScoreTextSize);
+        mScoreNumberPaint.setTextAlign(Paint.Align.CENTER);
     }
 
     /**
@@ -137,13 +159,16 @@ public class EngineBurn {
      * @return Integer array of settings
      */
     public int[] getSettings(){
-        return new int[] {mUFO.getX(), mUFO.getY()};
+        return new int[] {mScore, mUFO.getX(), mUFO.getY()};
     }
 
     /**
      * Start Or Initiate the next obstacle
      */
     public void startNextObstacle(int numberCalled, int gapYPos){
+        //As the obstacle has passed the halfway point and the game is still going the obstacle must
+        //have been cleared so increase the score by 1
+        mScore++;
         //If the obstacle is the last in the list reset the 1st obstacles position
         if(numberCalled == 2){
             mObstacles.get(0).resetPosition(gapYPos);
@@ -177,4 +202,11 @@ public class EngineBurn {
         return isGameOver;
     }
 
+    /**
+     * Getter for the games score
+     * @return score of the game
+     */
+    public int getScore(){
+        return mScore;
+    }
 }

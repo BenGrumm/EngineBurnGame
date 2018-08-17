@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class UFO {
 
     final static private String TAG = UFO.class.getSimpleName();
@@ -111,6 +114,31 @@ public class UFO {
     public boolean hitsFloor(int floorHeight){
         if((mY + ufoBitmap.getHeight()) >= floorHeight){
             return true;
+        }
+        return false;
+    }
+
+    private int obstacleWidth;
+    private int gapWidth;
+    private int obstacleX;
+    private int obstacleGapY;
+
+    /**
+     * Function to check if the UFO collides with any of the obstacles
+     * @param obstacleList all the obstacles in play
+     * @return true if collision detected else false
+     */
+    public boolean collidesWithObstacle(List<Obstacle> obstacleList){
+        obstacleWidth = obstacleList.get(0).getObstacleWidth();
+        gapWidth = obstacleList.get(0).getGapSize();
+        for(Obstacle obstacle : obstacleList){
+            obstacleX = obstacle.getX();
+            obstacleGapY = obstacle.getGapY();
+            //If the ufo is between the either side of the obstacle and is either higher than the bottom of the top obstacle or lower than the top of bottom obstacle return true
+            if((mX + ufoBitmap.getWidth()) >= obstacleX && (mX <= (obstacleX + obstacleWidth)) && (mY <= obstacleGapY - (gapWidth / 2)
+                    || (mY + ufoBitmap.getHeight()) >= obstacleGapY + (gapWidth / 2)) ){
+                return true;
+            }
         }
         return false;
     }
