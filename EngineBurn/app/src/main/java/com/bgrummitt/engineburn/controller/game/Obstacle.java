@@ -8,9 +8,10 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class Obstacle {
+public class Obstacle implements Serializable{
 
     final static private String TAG = Obstacle.class.getSimpleName();
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;

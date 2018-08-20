@@ -6,8 +6,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
-import android.util.Log;
 
 import com.bgrummitt.engineburn.R;
 
@@ -22,6 +20,7 @@ public class EngineBurn {
 
     private static Bitmap BitmapMoonFloor;
     private static Bitmap BitmapUFO;
+    private static Bitmap BitmapBackground;
     private static int FloorHeight;
 
     private Boolean isGameOver;
@@ -39,12 +38,7 @@ public class EngineBurn {
     public EngineBurn(Resources resources){
 
         getBitmaps(resources);
-
-        //Spawn the position in the middle of the screen. The bitmap is painted with the top left at the co-ordinates so the bitmap is moved
-        //left half of its width and up half of its height
-        mUFO = new UFO(BitmapUFO, (screenWidth / 2) - (BitmapUFO.getWidth() / 2), (screenHeight / 2) - (BitmapUFO.getHeight() / 2), screenHeight / 10);
-        //Initialise the starting obstacle
-        mObstacles.add(new Obstacle(this, screenWidth + 100 , screenHeight / 2, screenWidth / 20, 100, 500, 0, 400));
+        initialiseObjects((screenWidth / 2) - (BitmapUFO.getWidth() / 2), (screenHeight / 2) - (BitmapUFO.getHeight() / 2));
 
         isGameOver = false;
         mNumberOfScreenPresses = 0;
@@ -60,15 +54,18 @@ public class EngineBurn {
     public EngineBurn(Resources resources, int score, int ufoX, int ufoY){
 
         getBitmaps(resources);
-
-        //Spawn the position in the middle of the screen. The bitmap is painted with the top left at the co-ordinates so the bitmap is moved
-        //left half of its width and up half of its height
-        mUFO = new UFO(BitmapUFO, ufoX, ufoY, screenHeight / 10);
+        initialiseObjects(ufoX, ufoY);
 
         isGameOver = false;
         mNumberOfScreenPresses = 0;
         mScore = score;
-        setScorePaint();
+    }
+
+    public void initialiseObjects(int ufoX, int ufoY){
+        //Spawn UFO at given x and y with the distance travelled when pressed 10% of screen height
+        mUFO = new UFO(BitmapUFO, ufoX, ufoY, screenHeight / 10);
+        //Initialise the starting obstacle
+        mObstacles.add(new Obstacle(this, screenWidth + 100 , screenHeight / 2, screenWidth / 20, 100, 500, 0, screenHeight / 5));
     }
 
     /**
@@ -89,6 +86,10 @@ public class EngineBurn {
             BitmapMoonFloor = BitmapFactory.decodeResource(resources, R.drawable.moon_floor_simple);
             //Resize the bitmap
             BitmapMoonFloor = Bitmap.createScaledBitmap(BitmapMoonFloor, screenWidth + 100, screenHeight / 10, true);
+        }
+        if(BitmapBackground == null){
+            BitmapBackground = BitmapFactory.decodeResource(resources, R.mipmap.stars_background);
+            BitmapBackground = Bitmap.createScaledBitmap(BitmapBackground, screenWidth, screenHeight, true);
         }
         mScore = 0;
         setScorePaint();
@@ -137,17 +138,21 @@ public class EngineBurn {
      * @param canvas the canvas to draw on
      */
     public void Draw(Canvas canvas){
+        //Draw a black background
+        canvas.drawColor(Color.BLACK);
+        //Draw the bitmap background
+        canvas.drawBitmap(BitmapBackground, 0, 0, null);
         mUFO.Draw(canvas);
-        for(Obstacle obstacle : mObstacles) {
+        for(Obstacle obstacle : mObstacles)
             obstacle.Draw(canvas);
-        }
+        //Draw Score and floor
         canvas.drawText(Integer.toString(mScore), screenWidth / 2, screenHeight / 10, mScoreNumberPaint);
         canvas.drawBitmap(BitmapMoonFloor, 0, FloorHeight, null);
     }
 
     public void setScorePaint(){
         mScoreNumberPaint = new Paint();
-        mScoreNumberPaint.setColor(Color.BLACK);
+        mScoreNumberPaint.setColor(Color.WHITE);
         mScoreNumberPaint.setStyle(Paint.Style.FILL);
         mScoreTextSize = screenWidth / 10;
         mScoreNumberPaint.setTextSize(mScoreTextSize);
@@ -176,7 +181,7 @@ public class EngineBurn {
         //If the list is not full add a new obstacle else reset the next obstacle
         else if(mObstacles.size() != 3) {
             mObstacles.add(new Obstacle(this, screenWidth, (screenHeight / 2),
-                    screenWidth / 20, 100, 500, numberCalled + 1, 400));
+                    screenWidth / 20, 100, 500, numberCalled + 1, screenHeight / 5));
             mObstacles.get(numberCalled + 1).startMovement();
         }else{
             mObstacles.get(numberCalled + 1).resetPosition(gapYPos);
