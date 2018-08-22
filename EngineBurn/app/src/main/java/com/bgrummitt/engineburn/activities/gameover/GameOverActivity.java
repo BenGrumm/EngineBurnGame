@@ -9,8 +9,11 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.bgrummitt.engineburn.R;
+
+import java.util.Locale;
 
 public class GameOverActivity extends Activity {
 
@@ -34,6 +37,10 @@ public class GameOverActivity extends Activity {
         mFinalGameScore = GameOverStartedIntent.getIntExtra(SCORE_EXTRA, 0);
 
         setResult(3);
+
+        //Get the Labels and Buttons
+        TextView mTextViewScore = findViewById(R.id.ScoreTextView);
+        mTextViewScore.setText(String.format(Locale.UK, "%d", mFinalGameScore));
 
         Button mButtonRestartGame = findViewById(R.id.restartGameButtonGameOver);
         mButtonRestartGame.setOnClickListener(new View.OnClickListener() {
