@@ -13,23 +13,37 @@ public class UFO {
 
     private int mX;
     private int mY;
-    private Bitmap ufoBitmap;
+    private Bitmap ufoBitmapMax;
+    private Bitmap ufoBitmapMin;
+    private Bitmap ufoBitmapNone;
+    private Bitmap bitmapToDraw;
     private Boolean isFiring;
     private int mUFOFireDistance;
+    private int noneWidth;
+    private int noneHeight;
+    private long startAnimationTime;
 
     /**
      * UFO constructor
-     * @param ufoBitmap the bitmap picture of the UFO
+     * @param ufoBitmapMax the bitmap picture of the UFO with max fire
+     * @param ufoBitmapMin the bitmap picture of the UFO with mid fire
+     * @param ufoBitmapNone the bitmap picture of the UFO with no fire
      * @param startingX the X position the ufo will spawn at
      * @param startingY the Y position the ufo will spawn at
      * @param UFOFireDistance the distance that the ufo will go upwards when the screen is pressed
      */
-    public UFO(Bitmap ufoBitmap, int startingX, int startingY, int UFOFireDistance){
-        this.ufoBitmap = ufoBitmap;
+    public UFO(Bitmap ufoBitmapMax, Bitmap ufoBitmapMin, Bitmap ufoBitmapNone, int startingX, int startingY, int UFOFireDistance){
+        this.ufoBitmapMax = ufoBitmapMax;
+        this.ufoBitmapMin = ufoBitmapMin;
+        this.ufoBitmapNone = ufoBitmapNone;
+        bitmapToDraw = ufoBitmapMax;
 
         //Set the co-ordinates
         mX = startingX;
         mY = startingY;
+
+        noneWidth = ufoBitmapNone.getWidth();
+        noneHeight = ufoBitmapNone.getHeight();
 
         //Set the distance the UFO will go up when the screen is clicked
         this.mUFOFireDistance = UFOFireDistance;
@@ -37,6 +51,7 @@ public class UFO {
         //Initialise the isFiring var
         isFiring = false;
 
+        startAnimationTime = System.currentTimeMillis();
     }
 
     /**
@@ -47,6 +62,7 @@ public class UFO {
         long tempTime = System.currentTimeMillis();
         long tempRemove = (long)(mPercentageMoved * 250L);
         mStartTime = (tempTime - tempRemove);
+        startAnimationTime = System.currentTimeMillis();
     }
 
     /**
@@ -83,6 +99,7 @@ public class UFO {
                 mStartTime = System.currentTimeMillis();
                 mPercentageMoved = 0;
             }
+            flipDrawingBitmap();
         }else if(mStartTime !=0){
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
@@ -96,6 +113,26 @@ public class UFO {
                 mPercentageMoved = 0;
             }
         }
+        flipDrawingBitmap();
+    }
+
+    /**
+     * Function to switch the drawable that is being drawn
+     */
+    public void flipDrawingBitmap(){
+        //If the UFO is firing switch between the low and full firing every 0.25 seconds
+        if(isFiring) {
+            if(System.currentTimeMillis() - startAnimationTime > 250) {
+                if (bitmapToDraw == ufoBitmapMax) {
+                    bitmapToDraw = ufoBitmapMin;
+                } else {
+                    bitmapToDraw = ufoBitmapMax;
+                }
+                startAnimationTime = System.currentTimeMillis();
+            }
+        }else{
+            bitmapToDraw = ufoBitmapNone;
+        }
     }
 
     /**
@@ -103,7 +140,7 @@ public class UFO {
      * @param canvas drawn on
      */
     public void Draw(Canvas canvas){
-        canvas.drawBitmap(ufoBitmap, mX, mY, null);
+        canvas.drawBitmap(bitmapToDraw, mX, mY, null);
     }
 
     /**
@@ -112,7 +149,7 @@ public class UFO {
      * @return true if UFO hits floor
      */
     public boolean hitsFloor(int floorHeight){
-        if((mY + ufoBitmap.getHeight()) >= floorHeight){
+        if((mY + noneHeight) >= floorHeight){
             return true;
         }
         return false;
@@ -135,8 +172,8 @@ public class UFO {
             obstacleX = obstacle.getX();
             obstacleGapY = obstacle.getGapY();
             //If the ufo is between the either side of the obstacle and is either higher than the bottom of the top obstacle or lower than the top of bottom obstacle return true
-            if((mX + ufoBitmap.getWidth()) >= obstacleX && (mX <= (obstacleX + obstacleWidth)) && (mY <= obstacleGapY - (gapWidth / 2)
-                    || (mY + ufoBitmap.getHeight()) >= obstacleGapY + (gapWidth / 2)) ){
+            if((mX + noneWidth) >= obstacleX && (mX <= (obstacleX + obstacleWidth)) && (mY <= obstacleGapY - (gapWidth / 2)
+                    || (mY + noneHeight) >= obstacleGapY + (gapWidth / 2)) ){
                 return true;
             }
         }

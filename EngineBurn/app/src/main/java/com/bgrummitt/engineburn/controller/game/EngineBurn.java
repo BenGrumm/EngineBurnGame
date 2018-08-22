@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.drawable.BitmapDrawable;
+import android.util.Log;
 
 import com.bgrummitt.engineburn.R;
 
@@ -19,7 +21,9 @@ public class EngineBurn {
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
 
     private static Bitmap BitmapMoonFloor;
-    private static Bitmap BitmapUFO;
+    private static Bitmap BitmapUFOMin;
+    private static Bitmap BitmapUFONone;
+    private static Bitmap BitmapUFOMax;
     private static Bitmap BitmapBackground;
     private static int FloorHeight;
 
@@ -38,7 +42,7 @@ public class EngineBurn {
     public EngineBurn(Resources resources){
 
         getBitmaps(resources);
-        initialiseObjects((screenWidth / 2) - (BitmapUFO.getWidth() / 2), (screenHeight / 2) - (BitmapUFO.getHeight() / 2));
+        initialiseObjects((screenWidth / 2) - (BitmapUFOMax.getWidth() / 2), (screenHeight / 2) - (BitmapUFOMax.getHeight() / 2));
 
         isGameOver = false;
         mNumberOfScreenPresses = 0;
@@ -63,9 +67,15 @@ public class EngineBurn {
 
     public void initialiseObjects(int ufoX, int ufoY){
         //Spawn UFO at given x and y with the distance travelled when pressed 10% of screen height
-        mUFO = new UFO(BitmapUFO, ufoX, ufoY, screenHeight / 10);
+        mUFO = new UFO(BitmapUFOMax, BitmapUFOMin, BitmapUFONone, ufoX, ufoY, screenHeight / 10);
         //Initialise the starting obstacle
         mObstacles.add(new Obstacle(this, screenWidth + 100 , screenHeight / 2, screenWidth / 20, 100, 500, 0, screenHeight / 5));
+
+        //Remove bitmaps
+        BitmapUFOMax = null;
+        BitmapUFOMin = null;
+        BitmapUFONone = null;
+        System.gc();
     }
 
     /**
@@ -73,12 +83,19 @@ public class EngineBurn {
      * @param resources the android resources file
      */
     public void getBitmaps(Resources resources){
-        if(BitmapUFO == null) {
+        if(BitmapUFOMax == null) {
             //Get the spaceship bitmaps from the Resources Folder
-            BitmapUFO = BitmapFactory.decodeResource(resources, R.mipmap.spaceship_mid_fire);
+            BitmapUFOMax = BitmapFactory.decodeResource(resources, R.drawable.spaceship_max);
+            BitmapUFOMin = BitmapFactory.decodeResource(resources, R.drawable.spaceship_min);
+            BitmapUFONone = BitmapFactory.decodeResource(resources, R.drawable.spaceship_no);
+
+            float percentageMinMax = (float) BitmapUFOMin.getHeight() / BitmapUFOMax.getHeight();
+            float percentageNoneMax = (float) BitmapUFONone.getHeight() / BitmapUFOMax.getHeight();
 
             //Resize the bitmap to 5% of the height and 11% of the width
-            BitmapUFO = Bitmap.createScaledBitmap(BitmapUFO, screenWidth / 9, screenHeight / 20, true);
+            BitmapUFOMax = Bitmap.createScaledBitmap(BitmapUFOMax, screenWidth / 9, screenHeight / 20, true);
+            BitmapUFOMin = Bitmap.createScaledBitmap(BitmapUFOMin, screenWidth / 9, (int)((screenHeight / 20) * percentageMinMax), true);
+            BitmapUFONone = Bitmap.createScaledBitmap(BitmapUFONone, screenWidth / 9, (int)((screenHeight / 20) * percentageNoneMax), true);
         }
         if(BitmapMoonFloor == null) {
             FloorHeight = screenHeight - (screenHeight / 10);
