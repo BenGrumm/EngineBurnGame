@@ -42,7 +42,11 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if(gameSettings == null) {
             game = new EngineBurn(getResources());
         }else {
-            game = new EngineBurn(getResources(), gameSettings[0], gameSettings[1], gameSettings[2]);
+            int[] tempArr = new int[gameSettings.length - 3];
+            for(int i = 3; i < gameSettings.length; i++){
+                tempArr[i - 3] = gameSettings[i];
+            }
+            game = new EngineBurn(getResources(), gameSettings[0], gameSettings[1], gameSettings[2], tempArr);
         }
 
         StartThread();
@@ -144,7 +148,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public void update(){
         game.Update();
         if(game.isGameOver() && gameOverCount == 0){
-            Log.d(TAG, "Game Over");
+            Log.v(TAG, "Game Over");
+            //Create a new Intent with the score as an extra
             Intent intent = new Intent(mContext, GameOverActivity.class);
             intent.putExtra(SCORE_EXTRA, game.getScore());
             ((Activity) mContext).startActivityForResult(intent, 3);

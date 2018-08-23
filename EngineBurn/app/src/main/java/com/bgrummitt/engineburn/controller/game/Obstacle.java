@@ -16,11 +16,11 @@ public class Obstacle implements Serializable{
     final static private String TAG = Obstacle.class.getSimpleName();
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+    final static private int obstacleHeight = 500;
+    final static private int obstacleWidth = 100;
+    final static private int moveSpeed = screenWidth / 20;
 
-    static private int gapDistanceMax;
-    static private int obstacleMoveDistance;
-    static private int obstacleWidthClass;
-    static private int obstacleHeightClass;
+    static private int gapSize = screenHeight / 5;
 
     private EngineBurn mContext;
     private int mX;
@@ -37,25 +37,19 @@ public class Obstacle implements Serializable{
      * Constructor function of Obstacle class
      * @param X starting position
      * @param previousGapY the gap position of the obstacle in front of this one
-     * @param givenObstacleMoveDistance the distance the obstacle will move in 0.25 seconds
-     * @param obstacleWidth the width of the obstacle on the screen
-     * @param obstacleHeight the height of the obstacle
-     */
-    public Obstacle(EngineBurn context, int X, int previousGapY, int givenObstacleMoveDistance, int obstacleWidth, int obstacleHeight, int obstacleNumber, int gapSize){
+     * */
+    public Obstacle(EngineBurn context, int X, int previousGapY, int obstacleNumber){
         mContext = context;
         mX = X;
         mObstacleNumber = obstacleNumber;
         random = new Random();
         generateNewGap(previousGapY);
-        obstacleMoveDistance = givenObstacleMoveDistance;
         mGapSize = gapSize;
-        gapDistanceMax = 500;
-        isMoving = resetNextObstacle = false;
+        isMoving = false;
+        resetNextObstacle = X < (screenWidth / 2);
 
-        obstacleHeightClass = obstacleHeight;
-        obstacleWidthClass = obstacleWidth;
-        topObstacle = new Rect(mX, (mGapY - (mGapSize / 2)) - obstacleHeightClass, mX + obstacleWidthClass, mGapY - (mGapSize / 2));
-        bottomObstacle = new Rect(mX, mGapY + (mGapSize / 2), mX + obstacleWidthClass, mGapY + (mGapSize / 2) + obstacleHeightClass);
+        topObstacle = new Rect(mX, (mGapY - (mGapSize / 2)) - obstacleHeight, mX + obstacleWidth, mGapY - (mGapSize / 2));
+        bottomObstacle = new Rect(mX, mGapY + (mGapSize / 2), mX + obstacleWidth, mGapY + (mGapSize / 2) + obstacleHeight);
     }
 
     /**
@@ -63,15 +57,15 @@ public class Obstacle implements Serializable{
      * @param previousGapY the gap position of the obstacle in front of this one
      */
     public void generateNewGap(int previousGapY){
-        int max = previousGapY + (gapDistanceMax / 2);
-        int min = previousGapY - (gapDistanceMax / 2);
+        int max = previousGapY + (gapSize / 2);
+        int min = previousGapY - (gapSize / 2);
         mGapY = random.nextInt((max - min) + 1) + min;
         //If the gap is out of bounds generate a new gapY
         while (mGapY <= (mGapSize) || mGapY >= (screenHeight - mGapSize)){
             mGapY = random.nextInt((max - min) + 1) + min;
         }
-        if(gapDistanceMax <= screenHeight * 0.8){
-            gapDistanceMax += 10;
+        if(gapSize <= screenHeight * 0.8){
+            gapSize += 10;
         }
     }
 
@@ -87,7 +81,7 @@ public class Obstacle implements Serializable{
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
-            float movement = ((mPercentagePassed - mPercentageMoved) * obstacleMoveDistance);
+            float movement = ((mPercentagePassed - mPercentageMoved) * moveSpeed);
             mX -= movement;
             //Set the percentage that the UFO has moved on its upward journey
             mPercentageMoved = mPercentagePassed;
@@ -99,11 +93,11 @@ public class Obstacle implements Serializable{
         }
         //Temporary in update while the obstacles are just Rectangles
         //TODO remove and update draw to canvas
-        topObstacle.set(mX, 0, mX + obstacleWidthClass, mGapY - (mGapSize / 2));
-        bottomObstacle.set(mX, mGapY + (mGapSize / 2), mX + obstacleWidthClass, screenHeight);
-        if((mX + obstacleWidthClass) < 0){
+        topObstacle.set(mX, 0, mX + obstacleWidth, mGapY - (mGapSize / 2));
+        bottomObstacle.set(mX, mGapY + (mGapSize / 2), mX + obstacleWidth, screenHeight);
+        if((mX + obstacleWidth) < 0){
             isMoving = false;
-        }else if(!resetNextObstacle && (mX + obstacleWidthClass) < screenWidth / 2){
+        }else if(!resetNextObstacle && (mX + obstacleWidth) < screenWidth / 2){
             mContext.startNextObstacle(mObstacleNumber, mGapY);
             resetNextObstacle = true;
         }
@@ -137,7 +131,7 @@ public class Obstacle implements Serializable{
      * @param previousGapY the gap position of the obstacle in front
      */
     public void resetPosition(int previousGapY){
-        mX = screenWidth + obstacleWidthClass;
+        mX = screenWidth + obstacleWidth;
         generateNewGap(previousGapY);
         resetNextObstacle = false;
         startMovement();
@@ -154,7 +148,7 @@ public class Obstacle implements Serializable{
     }
     
     public int getObstacleWidth(){
-        return obstacleWidthClass;
+        return obstacleWidth;
     }
 
     public int getGapSize() {

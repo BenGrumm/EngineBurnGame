@@ -99,7 +99,6 @@ public class UFO {
                 mStartTime = System.currentTimeMillis();
                 mPercentageMoved = 0;
             }
-            flipDrawingBitmap();
         }else if(mStartTime !=0){
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
@@ -121,7 +120,7 @@ public class UFO {
      */
     public void flipDrawingBitmap(){
         //If the UFO is firing switch between the low and full firing every 0.25 seconds
-        if(isFiring) {
+        if(isFiring || mStartTime == 0) {
             if(System.currentTimeMillis() - startAnimationTime > 250) {
                 if (bitmapToDraw == ufoBitmapMax) {
                     bitmapToDraw = ufoBitmapMin;

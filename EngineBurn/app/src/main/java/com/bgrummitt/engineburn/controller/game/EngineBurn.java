@@ -43,6 +43,7 @@ public class EngineBurn {
 
         getBitmaps(resources);
         initialiseObjects((screenWidth / 2) - (BitmapUFOMax.getWidth() / 2), (screenHeight / 2) - (BitmapUFOMax.getHeight() / 2));
+        initialiseObstacles(new int[]{(screenWidth + 100), screenHeight / 2});
 
         isGameOver = false;
         mNumberOfScreenPresses = 0;
@@ -55,27 +56,35 @@ public class EngineBurn {
      * @param ufoX x position of the UFO
      * @param ufoY y position of the UFO
      */
-    public EngineBurn(Resources resources, int score, int ufoX, int ufoY){
+    public EngineBurn(Resources resources, int score, int ufoX, int ufoY, int[] obstacleSettings){
 
         getBitmaps(resources);
         initialiseObjects(ufoX, ufoY);
+        initialiseObstacles(obstacleSettings);
 
         isGameOver = false;
-        mNumberOfScreenPresses = 0;
+        mNumberOfScreenPresses = 1;
+        resetTiming();
         mScore = score;
     }
 
     public void initialiseObjects(int ufoX, int ufoY){
         //Spawn UFO at given x and y with the distance travelled when pressed 10% of screen height
         mUFO = new UFO(BitmapUFOMax, BitmapUFOMin, BitmapUFONone, ufoX, ufoY, screenHeight / 10);
-        //Initialise the starting obstacle
-        mObstacles.add(new Obstacle(this, screenWidth + 100 , screenHeight / 2, screenWidth / 20, 100, 500, 0, screenHeight / 5));
 
         //Remove bitmaps
         BitmapUFOMax = null;
         BitmapUFOMin = null;
         BitmapUFONone = null;
         System.gc();
+    }
+
+    public void initialiseObstacles(int[] obstacleSettingArr){
+        for(int i = 0; i < obstacleSettingArr.length / 2; i++){
+            Log.d(TAG, "Number : " + i + ": obstacle settings arr : " + (i * 2) + " X = " + obstacleSettingArr[(i * 2)]);
+            mObstacles.add(new Obstacle(this, obstacleSettingArr[(i * 2)], obstacleSettingArr[(i * 2)+1], i ));
+            mObstacles.get(i).startMovement();
+        }
     }
 
     /**
@@ -119,7 +128,6 @@ public class EngineBurn {
         if(mNumberOfScreenPresses++ == 0){
             mObstacles.get(0).startMovement();
             mUFO.startMovement();
-            mScore = 0;
         }else {
             mUFO.Fire();
         }
@@ -181,7 +189,18 @@ public class EngineBurn {
      * @return Integer array of settings
      */
     public int[] getSettings(){
-        return new int[] {mScore, mUFO.getX(), mUFO.getY()};
+        int[] settingsArr = new int[3 + (2 * mObstacles.size())];
+        settingsArr[0] = mScore;
+        settingsArr[1] = mUFO.getX();
+        settingsArr[2] = mUFO.getY();
+        int count = 0;
+        for(int i = 3; i < settingsArr.length; i+=2){
+            Log.d(TAG, "Saving Number : " + count);
+            settingsArr[i] = mObstacles.get(count).getX();
+            settingsArr[i + 1] = mObstacles.get(count).getGapY();
+            count++;
+        }
+        return settingsArr;
     }
 
     /**
@@ -197,8 +216,7 @@ public class EngineBurn {
         }
         //If the list is not full add a new obstacle else reset the next obstacle
         else if(mObstacles.size() != 3) {
-            mObstacles.add(new Obstacle(this, screenWidth, (screenHeight / 2),
-                    screenWidth / 20, 100, 500, numberCalled + 1, screenHeight / 5));
+            mObstacles.add(new Obstacle(this, screenWidth, (screenHeight / 2),numberCalled + 1));
             mObstacles.get(numberCalled + 1).startMovement();
         }else{
             mObstacles.get(numberCalled + 1).resetPosition(gapYPos);
