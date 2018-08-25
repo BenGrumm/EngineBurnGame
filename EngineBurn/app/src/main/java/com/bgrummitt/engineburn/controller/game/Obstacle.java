@@ -38,15 +38,20 @@ public class Obstacle implements Serializable{
      * @param X starting position
      * @param previousGapY the gap position of the obstacle in front of this one
      * */
-    public Obstacle(EngineBurn context, int X, int previousGapY, int obstacleNumber){
+    public Obstacle(EngineBurn context, int X, int previousGapY, int obstacleNumber, int yPos){
         mContext = context;
         mX = X;
         mObstacleNumber = obstacleNumber;
         random = new Random();
-        generateNewGap(previousGapY);
+        if(yPos != 0){
+            mGapY = yPos;
+        }else {
+            generateNewGap(previousGapY);
+        }
         mGapSize = gapSize;
         isMoving = false;
         resetNextObstacle = X < (screenWidth / 2);
+
 
         topObstacle = new Rect(mX, (mGapY - (mGapSize / 2)) - obstacleHeight, mX + obstacleWidth, mGapY - (mGapSize / 2));
         bottomObstacle = new Rect(mX, mGapY + (mGapSize / 2), mX + obstacleWidth, mGapY + (mGapSize / 2) + obstacleHeight);

@@ -2,14 +2,15 @@ package com.bgrummitt.engineburn.controller.game;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.util.Log;
 
-import java.util.ArrayList;
+import com.bgrummitt.engineburn.R;
+
 import java.util.List;
 
 public class UFO {
 
     final static private String TAG = UFO.class.getSimpleName();
+    final static private int ANIMATION_FLIP_TIME = 125;
 
     private int mX;
     private int mY;
@@ -22,6 +23,7 @@ public class UFO {
     private int noneWidth;
     private int noneHeight;
     private long startAnimationTime;
+    private Boolean isFloating = false;
 
     /**
      * UFO constructor
@@ -69,8 +71,9 @@ public class UFO {
      * Function called when the screen is touched
      */
     public void Fire(){
-        //Start the firing
+        //Start the firing and set floating to false so if it was it will stop
         isFiring = true;
+        isFloating = false;
         //Reset Variables
         mPercentageMoved = 0;
         mPercentagePassed = 0;
@@ -86,7 +89,13 @@ public class UFO {
      * Update called every game loop
      */
     public void Update(){
-        if(isFiring){
+        if(isFloating) {
+            //If the UFO has been floating for more that 0.075 seconds stop the floating and reset start time
+            if(System.currentTimeMillis() - mStartTime > 2){
+                isFloating = false;
+                mStartTime = System.currentTimeMillis();
+            }
+        }else if(isFiring){
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
@@ -98,8 +107,9 @@ public class UFO {
                 isFiring = false;
                 mStartTime = System.currentTimeMillis();
                 mPercentageMoved = 0;
+                isFloating = true;
             }
-        }else if(mStartTime !=0){
+        }else if(mStartTime != 0){
             //Get the percentage of time (0.25 seconds) that has passed
             mPercentagePassed = (System.currentTimeMillis() - mStartTime) / 250.0f;
             //Get the percentage change since the last movement then move the UFO that percentage of the distance is should travel
@@ -119,9 +129,9 @@ public class UFO {
      * Function to switch the drawable that is being drawn
      */
     public void flipDrawingBitmap(){
-        //If the UFO is firing switch between the low and full firing every 0.25 seconds
+        //If the UFO is firing switch between the low and full firing every ANIMATION_FLIP_TIME seconds
         if(isFiring || mStartTime == 0) {
-            if(System.currentTimeMillis() - startAnimationTime > 250) {
+            if(System.currentTimeMillis() - startAnimationTime > ANIMATION_FLIP_TIME) {
                 if (bitmapToDraw == ufoBitmapMax) {
                     bitmapToDraw = ufoBitmapMin;
                 } else {

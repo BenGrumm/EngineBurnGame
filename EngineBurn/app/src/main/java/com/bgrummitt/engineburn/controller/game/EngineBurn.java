@@ -43,7 +43,7 @@ public class EngineBurn {
 
         getBitmaps(resources);
         initialiseObjects((screenWidth / 2) - (BitmapUFOMax.getWidth() / 2), (screenHeight / 2) - (BitmapUFOMax.getHeight() / 2));
-        initialiseObstacles(new int[]{(screenWidth + 100), screenHeight / 2});
+        initialiseObstacles(new int[]{(screenWidth + 100), screenHeight / 2}, false);
 
         isGameOver = false;
         mNumberOfScreenPresses = 0;
@@ -60,7 +60,7 @@ public class EngineBurn {
 
         getBitmaps(resources);
         initialiseObjects(ufoX, ufoY);
-        initialiseObstacles(obstacleSettings);
+        initialiseObstacles(obstacleSettings, true);
 
         isGameOver = false;
         mNumberOfScreenPresses = 1;
@@ -79,11 +79,13 @@ public class EngineBurn {
         System.gc();
     }
 
-    public void initialiseObstacles(int[] obstacleSettingArr){
+    public void initialiseObstacles(int[] obstacleSettingArr, Boolean startMovement){
         for(int i = 0; i < obstacleSettingArr.length / 2; i++){
             Log.d(TAG, "Number : " + i + ": obstacle settings arr : " + (i * 2) + " X = " + obstacleSettingArr[(i * 2)]);
-            mObstacles.add(new Obstacle(this, obstacleSettingArr[(i * 2)], obstacleSettingArr[(i * 2)+1], i ));
-            mObstacles.get(i).startMovement();
+            mObstacles.add(new Obstacle(this, obstacleSettingArr[(i * 2)], obstacleSettingArr[(i * 2)+1], i, obstacleSettingArr[(i * 2)+1] ));
+            if(startMovement) {
+                mObstacles.get(i).startMovement();
+            }
         }
     }
 
@@ -216,7 +218,7 @@ public class EngineBurn {
         }
         //If the list is not full add a new obstacle else reset the next obstacle
         else if(mObstacles.size() != 3) {
-            mObstacles.add(new Obstacle(this, screenWidth, (screenHeight / 2),numberCalled + 1));
+            mObstacles.add(new Obstacle(this, screenWidth, (screenHeight / 2),numberCalled + 1, 0));
             mObstacles.get(numberCalled + 1).startMovement();
         }else{
             mObstacles.get(numberCalled + 1).resetPosition(gapYPos);
