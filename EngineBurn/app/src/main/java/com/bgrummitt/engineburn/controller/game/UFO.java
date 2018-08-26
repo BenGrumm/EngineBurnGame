@@ -10,7 +10,8 @@ import java.util.List;
 public class UFO {
 
     final static private String TAG = UFO.class.getSimpleName();
-    final static private int ANIMATION_FLIP_TIME = 125;
+    final static private int ANIMATION_FLIP_TIME = 125; // This in in milliseconds
+    final static private int FLOATING_TIME = 20; //This is in milliseconds
 
     private int mX;
     private int mY;
@@ -91,7 +92,7 @@ public class UFO {
     public void Update(){
         if(isFloating) {
             //If the UFO has been floating for more that 0.075 seconds stop the floating and reset start time
-            if(System.currentTimeMillis() - mStartTime > 2){
+            if(System.currentTimeMillis() - mStartTime > FLOATING_TIME){
                 isFloating = false;
                 mStartTime = System.currentTimeMillis();
             }

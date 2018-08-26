@@ -16,11 +16,12 @@ public class Obstacle implements Serializable{
     final static private String TAG = Obstacle.class.getSimpleName();
     final static private int screenWidth = Resources.getSystem().getDisplayMetrics().widthPixels;
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
-    final static private int obstacleHeight = 500;
-    final static private int obstacleWidth = 100;
+    final static private int obstacleHeight = screenHeight;
+    final static private int obstacleWidth = screenWidth / 10;
     final static private int moveSpeed = screenWidth / 20;
+    final static private int GapBetweenTopAndBottom = screenHeight / 5;
 
-    static private int gapSize = screenHeight / 5;
+    static private int MaxDistanceBetweenGaps = screenHeight / 5;
 
     private EngineBurn mContext;
     private int mX;
@@ -31,7 +32,6 @@ public class Obstacle implements Serializable{
     private Rect topObstacle;
     private Rect bottomObstacle;
     private Random random;
-    private int mGapSize;
 
     /**
      * Constructor function of Obstacle class
@@ -48,13 +48,12 @@ public class Obstacle implements Serializable{
         }else {
             generateNewGap(previousGapY);
         }
-        mGapSize = gapSize;
         isMoving = false;
         resetNextObstacle = X < (screenWidth / 2);
 
 
-        topObstacle = new Rect(mX, (mGapY - (mGapSize / 2)) - obstacleHeight, mX + obstacleWidth, mGapY - (mGapSize / 2));
-        bottomObstacle = new Rect(mX, mGapY + (mGapSize / 2), mX + obstacleWidth, mGapY + (mGapSize / 2) + obstacleHeight);
+        topObstacle = new Rect(mX, (mGapY - (GapBetweenTopAndBottom / 2)) - obstacleHeight, mX + obstacleWidth, mGapY - (GapBetweenTopAndBottom / 2));
+        bottomObstacle = new Rect(mX, mGapY + (GapBetweenTopAndBottom / 2), mX + obstacleWidth, mGapY + (GapBetweenTopAndBottom / 2) + obstacleHeight);
     }
 
     /**
@@ -62,15 +61,15 @@ public class Obstacle implements Serializable{
      * @param previousGapY the gap position of the obstacle in front of this one
      */
     public void generateNewGap(int previousGapY){
-        int max = previousGapY + (gapSize / 2);
-        int min = previousGapY - (gapSize / 2);
+        int max = previousGapY + (MaxDistanceBetweenGaps / 2);
+        int min = previousGapY - (MaxDistanceBetweenGaps / 2);
         mGapY = random.nextInt((max - min) + 1) + min;
         //If the gap is out of bounds generate a new gapY
-        while (mGapY <= (mGapSize) || mGapY >= (screenHeight - mGapSize)){
+        while (mGapY <= (GapBetweenTopAndBottom) || mGapY >= (screenHeight - GapBetweenTopAndBottom)){
             mGapY = random.nextInt((max - min) + 1) + min;
         }
-        if(gapSize <= screenHeight * 0.8){
-            gapSize += 10;
+        if(MaxDistanceBetweenGaps <= screenHeight * 0.8){
+            MaxDistanceBetweenGaps += 10;
         }
     }
 
@@ -98,8 +97,8 @@ public class Obstacle implements Serializable{
         }
         //Temporary in update while the obstacles are just Rectangles
         //TODO remove and update draw to canvas
-        topObstacle.set(mX, 0, mX + obstacleWidth, mGapY - (mGapSize / 2));
-        bottomObstacle.set(mX, mGapY + (mGapSize / 2), mX + obstacleWidth, screenHeight);
+        topObstacle.set(mX, 0, mX + obstacleWidth, mGapY - (GapBetweenTopAndBottom / 2));
+        bottomObstacle.set(mX, mGapY + (GapBetweenTopAndBottom / 2), mX + obstacleWidth, screenHeight);
         if((mX + obstacleWidth) < 0){
             isMoving = false;
         }else if(!resetNextObstacle && (mX + obstacleWidth) < screenWidth / 2){
@@ -143,7 +142,7 @@ public class Obstacle implements Serializable{
     }
 
     /**
-     * Reset the timing of the fall or boost
+     * Reset the timing of the obstacle
      */
     public void resetTiming(){
         //Get the current time and remove the distance moved
@@ -157,7 +156,7 @@ public class Obstacle implements Serializable{
     }
 
     public int getGapSize() {
-        return mGapSize;
+        return GapBetweenTopAndBottom;
     }
 
     public int getX() {
