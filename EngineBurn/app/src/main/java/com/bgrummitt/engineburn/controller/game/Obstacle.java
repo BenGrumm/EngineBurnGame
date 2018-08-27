@@ -18,7 +18,7 @@ public class Obstacle implements Serializable{
     final static private int screenHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
     final static private int obstacleHeight = screenHeight;
     final static private int obstacleWidth = screenWidth / 10;
-    final static private int moveSpeed = screenWidth / 20;
+    final static private int moveSpeed = screenWidth / 10;
     final static private int GapBetweenTopAndBottom = screenHeight / 5;
 
     static private int MaxDistanceBetweenGaps = screenHeight / 5;
@@ -113,7 +113,7 @@ public class Obstacle implements Serializable{
      */
     public void Draw(Canvas canvas){
         Paint paint = new Paint();
-        paint.setColor(Color.RED);
+        paint.setColor(Color.GRAY);
         paint.setAntiAlias(true);
         Paint paintTwo = new Paint(paint);
         canvas.drawRect(topObstacle, paint);

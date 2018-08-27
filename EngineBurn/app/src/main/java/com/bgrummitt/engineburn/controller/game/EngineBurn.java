@@ -70,7 +70,7 @@ public class EngineBurn {
 
     public void initialiseObjects(int ufoX, int ufoY){
         //Spawn UFO at given x and y with the distance travelled when pressed 10% of screen height
-        mUFO = new UFO(BitmapUFOMax, BitmapUFOMin, BitmapUFONone, ufoX, ufoY, screenHeight / 10);
+        mUFO = new UFO(BitmapUFOMax, BitmapUFOMin, BitmapUFONone, ufoX, ufoY);
 
         //Remove bitmaps
         BitmapUFOMax = null;
@@ -96,9 +96,9 @@ public class EngineBurn {
     public void getBitmaps(Resources resources){
         if(BitmapUFOMax == null) {
             //Get the spaceship bitmaps from the Resources Folder
-            BitmapUFOMax = BitmapFactory.decodeResource(resources, R.drawable.spaceship_max);
-            BitmapUFOMin = BitmapFactory.decodeResource(resources, R.drawable.spaceship_min);
-            BitmapUFONone = BitmapFactory.decodeResource(resources, R.drawable.spaceship_no);
+            BitmapUFOMax = BitmapFactory.decodeResource(resources, R.drawable.default_ufo);
+            BitmapUFOMin = BitmapFactory.decodeResource(resources, R.drawable.default_ufo_low_fire);
+            BitmapUFONone = BitmapFactory.decodeResource(resources, R.drawable.default_ufo_no_fire);
 
             float percentageMinMax = (float) BitmapUFOMin.getHeight() / BitmapUFOMax.getHeight();
             float percentageNoneMax = (float) BitmapUFONone.getHeight() / BitmapUFOMax.getHeight();

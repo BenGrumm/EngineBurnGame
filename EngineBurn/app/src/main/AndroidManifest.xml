@@ -22,7 +22,8 @@
             android:theme="@style/Theme.AppCompat.Dialog.Alert" />
         <activity
             android:name=".activities.gameover.GameOverActivity"
-            android:theme="@style/Theme.AppCompat.Dialog.Alert"/>
+            android:theme="@style/Theme.AppCompat.Dialog.Alert" />
+        <activity android:name=".activities.character_select.CharacterSelectionActivity"/>
     </application>
 
 </manifest>
