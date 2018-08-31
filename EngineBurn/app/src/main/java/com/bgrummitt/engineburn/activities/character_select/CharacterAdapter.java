@@ -50,10 +50,10 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
         @Override
         public void onClick(View v) {
             Log.v(TAG, "Clicked " + name);
-            HighlightObject(v);
+            SetHighlight(v);
         }
 
-        public void HighlightObject(View v){
+        public void SetHighlight(View v){
             v.setBackgroundColor(!isHighlighted ? 0x44FFFFFF : 0x00FFFFFF);
             isHighlighted = !isHighlighted;
         }
