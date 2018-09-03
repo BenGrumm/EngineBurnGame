@@ -10,6 +10,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
 import com.bgrummitt.engineburn.R;
+import com.bgrummitt.engineburn.controller.characters.GameCharacter;
+import com.bgrummitt.engineburn.controller.database.DataBaseAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,9 +41,9 @@ public class EngineBurn {
      * Default Constructor to initiate all classes with beginning settings
      * @param resources the resources from the android directory
      */
-    public EngineBurn(Resources resources){
+    public EngineBurn(Resources resources, GameCharacter currentCharacter){
 
-        getBitmaps(resources);
+        getBitmaps(resources, currentCharacter);
         initialiseObjects((screenWidth / 2) - (BitmapUFOMax.getWidth() / 2), (screenHeight / 2) - (BitmapUFOMax.getHeight() / 2));
         initialiseObstacles(new int[]{(screenWidth + 100), screenHeight / 2}, false);
 
@@ -56,9 +58,9 @@ public class EngineBurn {
      * @param ufoX x position of the UFO
      * @param ufoY y position of the UFO
      */
-    public EngineBurn(Resources resources, int score, int ufoX, int ufoY, int[] obstacleSettings){
+    public EngineBurn(Resources resources, int score, int ufoX, int ufoY, int[] obstacleSettings, GameCharacter currentCharacter){
 
-        getBitmaps(resources);
+        getBitmaps(resources, currentCharacter);
         initialiseObjects(ufoX, ufoY);
         initialiseObstacles(obstacleSettings, true);
 
@@ -93,12 +95,12 @@ public class EngineBurn {
      * Function to get the bitmaps if they are currently null
      * @param resources the android resources file
      */
-    public void getBitmaps(Resources resources){
+    public void getBitmaps(Resources resources, GameCharacter gameCharacter){
         if(BitmapUFOMax == null) {
             //Get the spaceship bitmaps from the Resources Folder
-            BitmapUFOMax = BitmapFactory.decodeResource(resources, R.drawable.default_ufo);
-            BitmapUFOMin = BitmapFactory.decodeResource(resources, R.drawable.default_ufo_low_fire);
-            BitmapUFONone = BitmapFactory.decodeResource(resources, R.drawable.default_ufo_no_fire);
+            BitmapUFOMax = BitmapFactory.decodeResource(resources, gameCharacter.mIDFullFire);
+            BitmapUFOMin = BitmapFactory.decodeResource(resources, gameCharacter.mIDLowFire);
+            BitmapUFONone = BitmapFactory.decodeResource(resources, gameCharacter.mIDNoFire);
 
             float percentageMinMax = (float) BitmapUFOMin.getHeight() / BitmapUFOMax.getHeight();
             float percentageNoneMax = (float) BitmapUFONone.getHeight() / BitmapUFOMax.getHeight();

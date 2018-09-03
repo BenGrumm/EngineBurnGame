@@ -11,6 +11,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.bgrummitt.engineburn.activities.gameover.GameOverActivity;
+import com.bgrummitt.engineburn.controller.characters.GameCharacter;
+import com.bgrummitt.engineburn.controller.characters.GameCharacters;
+import com.bgrummitt.engineburn.controller.database.DataBaseAdapter;
 import com.bgrummitt.engineburn.controller.game.EngineBurn;
 import com.bgrummitt.engineburn.controller.game.GameThread;
 
@@ -39,14 +42,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        GameCharacter CurrentGameCharacter = getCurrentCharacter();
         if(gameSettings == null) {
-            game = new EngineBurn(getResources());
+            game = new EngineBurn(getResources(), CurrentGameCharacter);
         }else {
             int[] tempArr = new int[gameSettings.length - 3];
             for(int i = 3; i < gameSettings.length; i++){
                 tempArr[i - 3] = gameSettings[i];
             }
-            game = new EngineBurn(getResources(), gameSettings[0], gameSettings[1], gameSettings[2], tempArr);
+            game = new EngineBurn(getResources(), gameSettings[0], gameSettings[1], gameSettings[2], tempArr, CurrentGameCharacter);
         }
 
         StartThread();
@@ -121,7 +125,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      * Function to start a new game
      */
     public void startNewGame(){
-        game = new EngineBurn(getResources());
+        game = new EngineBurn(getResources(), getCurrentCharacter());
         gameOverCount = 0;
     }
 
@@ -155,6 +159,16 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             ((Activity) mContext).startActivityForResult(intent, 3);
             gameOverCount++;
         }
+    }
+
+    public GameCharacter getCurrentCharacter(){
+        DataBaseAdapter mDbHelper = new DataBaseAdapter(mContext);
+        mDbHelper.createDatabase();
+        mDbHelper.open();
+        String characterName = mDbHelper.getSetting(DataBaseAdapter.CHARACTER_SKIN_SETTING);
+        mDbHelper.close();
+
+        return GameCharacters.getCharacter(characterName);
     }
 
 }

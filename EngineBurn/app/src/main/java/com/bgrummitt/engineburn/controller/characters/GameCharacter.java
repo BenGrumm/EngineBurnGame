@@ -1,16 +1,16 @@
-package com.bgrummitt.engineburn.activities.character_select;
+package com.bgrummitt.engineburn.controller.characters;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Characters implements Parcelable{
+public class GameCharacter implements Parcelable{
 
     public int mIDFullFire;
     public int mIDLowFire;
     public int mIDNoFire;
     private String mCharacterName;
 
-    public Characters(String name, int IDFullFire, int IDLowFire, int IDNoFire){
+    public GameCharacter(String name, int IDFullFire, int IDLowFire, int IDNoFire){
         mCharacterName = name;
         mIDFullFire = IDFullFire;
         mIDLowFire = IDLowFire;
@@ -62,22 +62,22 @@ public class Characters implements Parcelable{
         dest.writeString(mCharacterName);
     }
 
-    private Characters(Parcel in){
+    private GameCharacter(Parcel in){
         mIDFullFire = in.readInt();
         mIDLowFire = in.readInt();
         mIDNoFire = in.readInt();
         mCharacterName = in.readString();
     }
 
-    public static final Creator<Characters> CREATOR = new Creator<Characters>() {
+    public static final Creator<GameCharacter> CREATOR = new Creator<GameCharacter>() {
         @Override
-        public Characters createFromParcel(Parcel source) {
-            return new Characters(source);
+        public GameCharacter createFromParcel(Parcel source) {
+            return new GameCharacter(source);
         }
 
         @Override
-        public Characters[] newArray(int size) {
-            return new Characters[size];
+        public GameCharacter[] newArray(int size) {
+            return new GameCharacter[size];
         }
     };
 

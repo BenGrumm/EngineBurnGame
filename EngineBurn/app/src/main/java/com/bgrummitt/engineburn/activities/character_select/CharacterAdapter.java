@@ -1,7 +1,6 @@
 package com.bgrummitt.engineburn.activities.character_select;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,19 +10,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bgrummitt.engineburn.R;
-
-import java.util.List;
+import com.bgrummitt.engineburn.controller.characters.GameCharacter;
 
 public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.CharacterViewHolder> {
 
     final static private String TAG = CharacterAdapter.class.getSimpleName();
 
     private Context mContext;
-    private Characters[] mCharacterList;
-    private String highlightedCharacter;
+    private GameCharacter[] mCharacterList;
+    private int mSelectedCharacterPosition = RecyclerView.NO_POSITION;
 
 
-    public CharacterAdapter(Context context, Characters[] characters){
+    public CharacterAdapter(Context context, GameCharacter[] characters){
         mContext = context;
         mCharacterList = characters;
     }
@@ -32,7 +30,6 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
 
         public String name;
         public ImageView mCharacterImage;
-        public boolean isHighlighted = false;
 
         public CharacterViewHolder(View itemView){
             super(itemView);
@@ -42,20 +39,27 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
             itemView.setOnClickListener(this);
         }
 
-        public void BindCharacter(Characters character){
+        /**
+         * As recycler views will reuse the same view if the list is long enough binding changes the data in
+         * the view to the data of the given character
+         * @param character the character that will be displayed in the view
+         */
+        public void BindCharacter(GameCharacter character){
             name = character.getCharacterName();
             mCharacterImage.setImageResource(character.getIDFullFire());
         }
 
+        /**
+         * Function called when the recycler view is clicked
+         * @param v the view that holds the current recycler view.
+         */
         @Override
         public void onClick(View v) {
             Log.v(TAG, "Clicked " + name);
-            SetHighlight(v);
-        }
-
-        public void SetHighlight(View v){
-            v.setBackgroundColor(!isHighlighted ? 0x44FFFFFF : 0x00FFFFFF);
-            isHighlighted = !isHighlighted;
+            //Reload the current item that is highlighted and then change the highlighted position to this one and then reload this view
+            notifyItemChanged(mSelectedCharacterPosition);
+            mSelectedCharacterPosition = getLayoutPosition();
+            notifyItemChanged(mSelectedCharacterPosition);
         }
 
     }
@@ -70,11 +74,26 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
     @Override
     public void onBindViewHolder(@NonNull CharacterViewHolder holder, int position) {
         holder.BindCharacter(mCharacterList[position]);
+        //Set this given holder to the selected one and then set the background to a highlighted color
+        holder.itemView.setSelected(mSelectedCharacterPosition == position);
+        //The colors are a semi transparent white and a fully transparent when not highlighted (44) semi transparent (00) fully transparent
+        holder.itemView.setBackgroundColor(mSelectedCharacterPosition == position ? 0x44FFFFFF : 0x00FFFFFF);
     }
 
     @Override
     public int getItemCount() {
         return mCharacterList.length;
+    }
+
+    /**
+     * Get the currently highlighted character
+     * @return the highlighted character
+     */
+    public GameCharacter getSelectedCharacter(){
+        //If there hasn't been a character selected return null
+        if(mSelectedCharacterPosition == RecyclerView.NO_POSITION)
+            return null;
+        return mCharacterList[mSelectedCharacterPosition];
     }
 
 }
