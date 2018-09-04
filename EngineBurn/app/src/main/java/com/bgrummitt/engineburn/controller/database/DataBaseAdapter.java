@@ -25,7 +25,6 @@ public class DataBaseAdapter {
     private DataBaseHelper mDbHelper;
 
     //Template sql query
-    private final String mQueryNumberSql ="SELECT _id FROM " + SETTING_SETTING_COLUMN + " WHERE " + SETTING_NAME_COLUMN + " LIKE '%s'";
     private final String mQuerySetting ="SELECT " + SETTING_SETTING_COLUMN + " FROM " + DataBaseHelper.DB_TABLE_NAME + " WHERE " + SETTING_NAME_COLUMN + " LIKE '%s'";
 
     public DataBaseAdapter(Context context) {
