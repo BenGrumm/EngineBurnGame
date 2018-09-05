@@ -25,6 +25,7 @@ public class PauseActivity extends Activity {
         //Get the buttons
         Button mButtonResumeGame = findViewById(R.id.ResumeGameButton);
         Button mButtonRestartGame = findViewById(R.id.RestartGameButton);
+        Button mHomeButton = findViewById(R.id.HomeButton);
 
         //Set the onclick listener to end activity when pressed.
         mButtonResumeGame.setOnClickListener(new View.OnClickListener() {
@@ -40,6 +41,14 @@ public class PauseActivity extends Activity {
             public void onClick(View v) {
                 //Set the result to 1 and finish the activity
                 setResult(1);
+                finish();
+            }
+        });
+        mHomeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Set the result to 2 and finish the activity
+                setResult(2);
                 finish();
             }
         });

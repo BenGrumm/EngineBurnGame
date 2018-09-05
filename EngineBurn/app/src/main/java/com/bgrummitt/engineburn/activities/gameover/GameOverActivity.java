@@ -42,11 +42,22 @@ public class GameOverActivity extends Activity {
         TextView mTextViewScore = findViewById(R.id.ScoreTextView);
         mTextViewScore.setText(String.format(Locale.UK, "%d", mFinalGameScore));
 
+        //Retrieve buttons
         Button mButtonRestartGame = findViewById(R.id.restartGameButtonGameOver);
+        Button mButtonHome = findViewById(R.id.HomeButton);
+
         mButtonRestartGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setResult(3);
+                finish();
+            }
+        });
+
+        mButtonHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setResult(2);
                 finish();
             }
         });

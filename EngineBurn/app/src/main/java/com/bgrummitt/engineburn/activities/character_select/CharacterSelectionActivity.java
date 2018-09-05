@@ -9,6 +9,7 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.bgrummitt.engineburn.R;
@@ -41,6 +42,7 @@ public class CharacterSelectionActivity extends AppCompatActivity {
 
         mRecyclerView = findViewById(R.id.recyclerView);
         mSaveCharacterButton = findViewById(R.id.SaveCharacterSelection);
+        ImageButton mHomeButton = findViewById(R.id.ReturnHomeImageButton);
 
 
         //Set the recycler views adapter
@@ -58,6 +60,13 @@ public class CharacterSelectionActivity extends AppCompatActivity {
                 saveCharacterChoice(characterAdapter.getSelectedCharacter());
                 Toast toast = Toast.makeText(CharacterSelectionActivity.this, "Saved", Toast.LENGTH_SHORT);
                 toast.show();
+            }
+        });
+
+        mHomeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }

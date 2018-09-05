@@ -13,7 +13,7 @@ public class GameCharacters {
     static private GameCharacter[] gameCharacters;
 
     /**
-     *
+     * Create a array of all the characters
      * @return
      */
     public static GameCharacter[] getGameCharacters(){
@@ -32,8 +32,10 @@ public class GameCharacters {
      * @return character asked for
      */
     public static GameCharacter getCharacter(String name){
+        //If the gameCharacters are null get them
         if(gameCharacters == null)
             gameCharacters = getGameCharacters();
+        //For character in the character array if it's name is equal to the given name return the character
         for(GameCharacter character : gameCharacters){
             if(character.getCharacterName().equals(name)){
                 return character;
