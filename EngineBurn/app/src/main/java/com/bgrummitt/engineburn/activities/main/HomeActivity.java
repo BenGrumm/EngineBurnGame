@@ -1,10 +1,12 @@
 package com.bgrummitt.engineburn.activities.main;
 
 import android.content.Intent;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import com.bgrummitt.engineburn.R;
 import com.bgrummitt.engineburn.activities.character_select.CharacterSelectionActivity;
@@ -16,16 +18,20 @@ public class HomeActivity extends AppCompatActivity {
 
     final static public String CHARACTER_ARRAY = "CHARACTER_ARRAY";
 
-    private Button mButtonStartGame;
-    private Button mButtonSelectCharacter;
+    private ImageButton mButtonStartGame;
+    private ImageButton mButtonSelectCharacter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
+
         mButtonStartGame = findViewById(R.id.startGameButton);
         mButtonSelectCharacter = findViewById(R.id.characterSelectButton);
+
 
         mButtonStartGame.setOnClickListener(new View.OnClickListener() {
             @Override

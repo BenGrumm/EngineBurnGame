@@ -50,19 +50,19 @@ public class GameActivity extends Activity {
      * Create a new game
      */
     public void createNewGame(){
-        //Create a layout on top of the surface to have button in the game
+        //Create a layout on top of the surface to have play_button in the game
         mGame = new FrameLayout(this);
         mGameSurface = new GameView(this);
         mGameWidgets = new ConstraintLayout(this);
 
-        //Create new Image button
+        //Create new Image play_button
         mImageButtonPauseGame = new ImageButton(this);
-        //Retrieve the pause button from the android resources
+        //Retrieve the pause play_button from the android resources
         mImageButtonPauseGame.setImageResource(android.R.drawable.ic_media_pause);
         //Remove the buttons background
         mImageButtonPauseGame.setBackgroundResource(0);
 
-        //Add the button to the constraint layout
+        //Add the play_button to the constraint layout
         mGameWidgets.addView(mImageButtonPauseGame);
 
         //Add the layouts to the main Frame layout
