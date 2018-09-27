@@ -23,7 +23,10 @@
         <activity
             android:name=".activities.gameover.GameOverActivity"
             android:theme="@style/Theme.AppCompat.Dialog.Alert" />
-        <activity android:name=".activities.character_select.CharacterSelectionActivity"/>
+        <activity android:name=".activities.character_select.CharacterSelectionActivity" />
+        <activity
+            android:name=".activities.leaderboard.LeaderboardActivity"
+            android:theme="@style/AppTheme.PopUp"/>
     </application>
 
 </manifest>

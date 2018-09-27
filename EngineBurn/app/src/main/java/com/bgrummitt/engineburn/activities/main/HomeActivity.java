@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 
 import com.bgrummitt.engineburn.R;
 import com.bgrummitt.engineburn.activities.character_select.CharacterSelectionActivity;
+import com.bgrummitt.engineburn.activities.leaderboard.LeaderboardActivity;
 import com.bgrummitt.engineburn.controller.characters.GameCharacter;
 import com.bgrummitt.engineburn.activities.game.GameActivity;
 import com.bgrummitt.engineburn.controller.characters.GameCharacters;
@@ -20,6 +21,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private ImageButton mButtonStartGame;
     private ImageButton mButtonSelectCharacter;
+    private ImageButton mButtonLeaderboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public class HomeActivity extends AppCompatActivity {
 
         mButtonStartGame = findViewById(R.id.startGameButton);
         mButtonSelectCharacter = findViewById(R.id.characterSelectButton);
+        mButtonLeaderboard = findViewById(R.id.leaderBoardButton);
 
 
         mButtonStartGame.setOnClickListener(new View.OnClickListener() {
@@ -45,6 +48,14 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startCharacterSelectionActivity();
+            }
+        });
+
+        mButtonLeaderboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(HomeActivity.this, LeaderboardActivity.class);
+                startActivity(intent);
             }
         });
     }
