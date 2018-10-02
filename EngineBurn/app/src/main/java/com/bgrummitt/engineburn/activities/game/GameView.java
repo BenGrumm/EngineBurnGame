@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -161,13 +160,21 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Get the game character that has been saved in the user settings
+     * @return the saved game character
+     */
     public GameCharacter getCurrentCharacter(){
+        //Create new database adapter passing context
         DataBaseAdapter mDbHelper = new DataBaseAdapter(mContext);
+        //Create and open database
         mDbHelper.createDatabase();
         mDbHelper.open();
+        //Get the setting from the database passing the Final variable for the character in the DatabaseAdapter
         String characterName = mDbHelper.getSetting(DataBaseAdapter.CHARACTER_SKIN_SETTING);
         mDbHelper.close();
 
+        //Using the name return the character from the game characters getCharacter static variable
         return GameCharacters.getCharacter(characterName);
     }
 

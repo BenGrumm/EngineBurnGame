@@ -64,6 +64,12 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
 
     }
 
+    /**
+     * On creation of the view (individual recycler item) inflate the layout and pass it to the new CharacterViewHolder
+     * @param parent the recycler view adding to
+     * @param viewType I am using the same view type for every layout item so this will always be the same
+     * @return new CharacterViewHolder with view initialised
+     */
     @NonNull
     @Override
     public CharacterViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -71,6 +77,11 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
         return new CharacterViewHolder(view);
     }
 
+    /**
+     * When the views item changes as they are recycled when out of screen change the data in the view
+     * @param holder the view that needs to be changed
+     * @param position the position of the new data in the array to change the data to
+     */
     @Override
     public void onBindViewHolder(@NonNull CharacterViewHolder holder, int position) {
         holder.BindCharacter(mCharacterList[position]);
@@ -80,6 +91,10 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
         holder.itemView.setBackgroundColor(mSelectedCharacterPosition == position ? 0x44FFFFFF : 0x00FFFFFF);
     }
 
+    /**
+     * Get the number of items in the recycler view
+     * @return number of characters in the recycler view
+     */
     @Override
     public int getItemCount() {
         return mCharacterList.length;
@@ -90,7 +105,7 @@ public class CharacterAdapter extends RecyclerView.Adapter<CharacterAdapter.Char
      * @return the highlighted character
      */
     public GameCharacter getSelectedCharacter(){
-        //If there hasn't been a character selected return null
+        //If there hasn't been a character selected return null else return selected character
         if(mSelectedCharacterPosition == RecyclerView.NO_POSITION)
             return null;
         return mCharacterList[mSelectedCharacterPosition];
