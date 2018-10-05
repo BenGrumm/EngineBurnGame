@@ -16,6 +16,7 @@ import com.bgrummitt.engineburn.R;
 import com.bgrummitt.engineburn.activities.main.HomeActivity;
 import com.bgrummitt.engineburn.controller.characters.GameCharacter;
 import com.bgrummitt.engineburn.controller.database.DataBaseAdapter;
+import com.bgrummitt.engineburn.controller.database.DataBaseHelper;
 
 import java.util.Arrays;
 
@@ -75,10 +76,10 @@ public class CharacterSelectionActivity extends AppCompatActivity {
         if(characterChoice == null)
             return;
         //Set the database to a new Test adapter, create the database and then open it
-        DataBaseAdapter mDbHelper = new DataBaseAdapter(this);
+        DataBaseAdapter mDbHelper = new DataBaseAdapter(this, DataBaseHelper.DB_TABLE_NAME_SETTINGS);
         mDbHelper.createDatabase();
         mDbHelper.open();
-        mDbHelper.editSetting(DataBaseAdapter.CHARACTER_SKIN_SETTING, characterChoice.getCharacterName());
+        mDbHelper.editSetting(DataBaseHelper.CHARACTER_SKIN_SETTING, characterChoice.getCharacterName());
         mDbHelper.close();
     }
 

@@ -14,16 +14,21 @@ import android.util.Log;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
-    private static String TAG = DataBaseHelper.class.getSimpleName();
+    private final static String TAG = DataBaseHelper.class.getSimpleName();
+    public final static String DB_NAME_SETTINGS ="GAME_SETTINGS.db";
+    public final static String DB_NAME_LEADERBOARD = "LOCAL_LEADERBOARD.db";
+    public final static String DB_TABLE_NAME_SETTINGS = "GAME_SETTINGS";
+    public final static String DB_TABLE_NAME_LEADERBOARD = "LOCAL_LEADERBOARD";
+    final static public String SETTING_NAME_COLUMN = "SETTING_NAME";
+    final static public String SETTING_SETTING_COLUMN = "SETTING_VALUE";
+    final static public String CHARACTER_SKIN_SETTING = "CHARACTER_SKIN";
     private static String DB_PATH = "";
-    public static String DB_NAME ="GAME_SETTINGS.db";
-    public static String DB_TABLE_NAME = "GAME_SETTINGS";
     private SQLiteDatabase mDataBase;
     private final Context mContext;
 
-    public DataBaseHelper(Context context) {
+    public DataBaseHelper(Context context, String db_name) {
         // Pass the context name and version to the super class
-        super(context, DB_NAME, null, 1);
+        super(context, db_name, null, 1);
         //Get the DB_PATH
         DB_PATH = context.getApplicationInfo().dataDir + "/databases/";
         this.mContext = context;
@@ -52,9 +57,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) { }
 
-    //Check that the database exists here: /data/data/your package/databases/QUESTIONS_TABLE.db
+    //Check that the database exists here: /data/data/your package/databases/ database name
     private boolean checkDataBase() {
-        File dbFile = new File(DB_PATH + DB_NAME);
+        File dbFile = new File(DB_PATH + this.getDatabaseName());
         //Log.v("dbFile", dbFile + "   "+ dbFile.exists());
         return dbFile.exists();
     }
@@ -65,8 +70,8 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      */
     private void copyDataBase() throws IOException {
         //Open the database in the assets/databases folder
-        InputStream mInput = mContext.getAssets().open("databases/" + DB_NAME);
-        String outFileName = DB_PATH + DB_NAME;
+        InputStream mInput = mContext.getAssets().open("databases/" + this.getDatabaseName());
+        String outFileName = DB_PATH + this.getDatabaseName();
         OutputStream mOutput = new FileOutputStream(outFileName);
         //Using a buffer copy over the database to the database app folder
         byte[] mBuffer = new byte[1024];
@@ -86,7 +91,7 @@ public class DataBaseHelper extends SQLiteOpenHelper {
      * @throws SQLException
      */
     public boolean openDataBase() throws SQLException {
-        String mPath = DB_PATH + DB_NAME;
+        String mPath = DB_PATH + this.getDatabaseName();
         mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.CREATE_IF_NECESSARY);
         //mDataBase = SQLiteDatabase.openDatabase(mPath, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS);
         //Return true if succesfull

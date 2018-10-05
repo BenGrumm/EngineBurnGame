@@ -16,20 +16,17 @@ public class DataBaseAdapter {
 
     protected static final String TAG = "DataAdapter";
 
-    final static public String SETTING_NAME_COLUMN = "SETTING_NAME";
-    final static public String SETTING_SETTING_COLUMN = "SETTING_VALUE";
-    final static public String CHARACTER_SKIN_SETTING = "CHARACTER_SKIN";
-
     private final Context mContext;
+    private String mDBName;
+    private String mDBFileName;
     private SQLiteDatabase mDb;
     private DataBaseHelper mDbHelper;
 
-    //Template sql query
-    private final String mQuerySetting ="SELECT " + SETTING_SETTING_COLUMN + " FROM " + DataBaseHelper.DB_TABLE_NAME + " WHERE " + SETTING_NAME_COLUMN + " LIKE '%s'";
-
-    public DataBaseAdapter(Context context) {
+    public DataBaseAdapter(Context context, String DBName) {
         this.mContext = context;
-        mDbHelper = new DataBaseHelper(mContext);
+        mDBName = DBName;
+        mDBFileName = String.format("%s.db", mDBName);
+        mDbHelper = new DataBaseHelper(mContext, mDBFileName);
     }
 
     /**
@@ -72,63 +69,25 @@ public class DataBaseAdapter {
     }
 
     /**
-     * Get the settings names from the database
-     * @return a string array of settings names
-     */
-    public String[] getSettings(){
-        //Using an array list to easily add more questions
-        List<String> stringArr = new ArrayList<String>();
-        Cursor mCur;
-        try{
-            //Try selecting all questions from the database
-            String sql = "SELECT " + SETTING_NAME_COLUMN + " FROM " + DataBaseHelper.DB_NAME;
-
-            mCur = mDb.rawQuery(sql, null);
-
-            if(mCur != null){
-                mCur.moveToNext();
-            }
-        }catch (SQLException mSQLException){
-            Log.e(TAG, "ERROR GETTING QUESTIONS === " + mSQLException.toString());
-            throw mSQLException;
-        }
-
-        //For all the questions in the Database
-        for(int i = 0; i < getSettingsCount(); i++){
-            Log.d(TAG, "Question " + i + " = " + mCur.getString(0));
-            //Get the question at column 0 and add it to the list
-            stringArr.add(mCur.getString(0));
-            //Move to the next row
-            mCur.moveToNext();
-        }
-
-        Log.d(TAG, stringArr.size() + "");
-
-        //Turn the List into an Array
-        String[] tempArr = new String[stringArr.size()];
-        tempArr = stringArr.toArray(tempArr);
-
-        return tempArr;
-    }
-
-    /**
      * Get the number of entries into the database
      * @return number of entries in the database
      */
     public long getSettingsCount(){
-        long count = DatabaseUtils.queryNumEntries(mDb, DataBaseHelper.DB_NAME);
-        return count;
+        return DatabaseUtils.queryNumEntries(mDb, mDBName);
     }
 
+    //Template sql query
+    private final String mQuerySetting ="SELECT %s FROM %s WHERE %s LIKE '%s'";
+
     /**
-     * Given the question get the Answer from the database
-     * @param SettingName name of the setting to return
+     * Given the setting name get the setting from the database
+     * @param entryName name of the setting to return
      * @return String of the setting
      */
-    public String getSetting(String SettingName){
+    public String getDBEntry(String column, String columnComparingTo, String entryName){
         try {
             //Query the database with the formatted sql query
-            Cursor mCur = mDb.rawQuery(String.format(mQuerySetting, SettingName), null);
+            Cursor mCur = mDb.rawQuery(String.format(mQuerySetting, column, mDBName, columnComparingTo, entryName), null);
             if (mCur!=null) {
                 mCur.moveToNext();
             }
@@ -140,7 +99,8 @@ public class DataBaseAdapter {
         }
     }
 
-    private final String mEditSettingSql = "UPDATE " + DataBaseHelper.DB_TABLE_NAME + " SET " + SETTING_SETTING_COLUMN + " = '%s' WHERE " + SETTING_NAME_COLUMN + " = '%s'";
+    //This is effectively what is sent when the .update function is used in the editSetting function
+    private final String mEditSettingSql = "UPDATE %s SET %s = '%s' WHERE %s = '%s'";
 
     /**
      * Function to edit the settings in the database
@@ -150,8 +110,9 @@ public class DataBaseAdapter {
     public void editSetting(String settingName, String newSetting){
         try {
             ContentValues cv = new ContentValues();
-            cv.put(SETTING_SETTING_COLUMN, newSetting);
-            int NumberOfAffectedRows = mDb.update(DataBaseHelper.DB_TABLE_NAME, cv,SETTING_NAME_COLUMN + " = ?", new String[]{settingName});
+            cv.put(DataBaseHelper.SETTING_SETTING_COLUMN, newSetting);
+            // Update the Table in a very similar string to mEditSettingSql string with setting in it
+            int NumberOfAffectedRows = mDb.update(mDBName, cv,DataBaseHelper.SETTING_NAME_COLUMN + " = ?", new String[]{settingName});
             Log.v(TAG, String.format("%d Rows Edited", NumberOfAffectedRows));
         } catch (SQLException mSQLException) {
             Log.e(TAG, "getTestData >>"+ mSQLException.toString());
