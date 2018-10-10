@@ -6,12 +6,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 
 import com.bgrummitt.engineburn.R;
 import com.bgrummitt.engineburn.controller.characters.GameCharacter;
-import com.bgrummitt.engineburn.controller.database.DataBaseAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

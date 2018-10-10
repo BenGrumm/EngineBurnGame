@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -17,10 +18,13 @@ import com.bgrummitt.engineburn.activities.main.HomeActivity;
 import com.bgrummitt.engineburn.controller.characters.GameCharacter;
 import com.bgrummitt.engineburn.controller.database.DataBaseAdapter;
 import com.bgrummitt.engineburn.controller.database.DataBaseHelper;
+import com.bgrummitt.engineburn.controller.database.DataBaseSettingsAdapter;
 
 import java.util.Arrays;
 
 public class CharacterSelectionActivity extends AppCompatActivity {
+
+    final static private String TAG = DataBaseHelper.class.getSimpleName();
 
     private GameCharacter[] mCharacters;
     private RecyclerView mRecyclerView;
@@ -76,10 +80,10 @@ public class CharacterSelectionActivity extends AppCompatActivity {
         if(characterChoice == null)
             return;
         //Set the database to a new Test adapter, create the database and then open it
-        DataBaseAdapter mDbHelper = new DataBaseAdapter(this, DataBaseHelper.DB_TABLE_NAME_SETTINGS);
+        DataBaseSettingsAdapter mDbHelper = new DataBaseSettingsAdapter(this);
         mDbHelper.createDatabase();
         mDbHelper.open();
-        mDbHelper.editSetting(DataBaseHelper.CHARACTER_SKIN_SETTING, characterChoice.getCharacterName());
+        mDbHelper.editSetting(DataBaseSettingsAdapter.CHARACTER_SKIN_SETTING, characterChoice.getCharacterName());
         mDbHelper.close();
     }
 

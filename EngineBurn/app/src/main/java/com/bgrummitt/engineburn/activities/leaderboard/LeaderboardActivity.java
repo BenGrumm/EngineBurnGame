@@ -78,7 +78,7 @@ public class LeaderboardActivity extends Activity {
             }
         });
 
-        UserScore[] userScoreArray = tempClass.getUserScores();
+        UserScore[] userScoreArray = GetLocalScores();
         leaderboardRecyclerView.setAdapter(new LeaderboardAdapter(this, userScoreArray));
 
         //Set the layout manager and tell the recycler view that the number of users scores will not change
@@ -86,4 +86,10 @@ public class LeaderboardActivity extends Activity {
         leaderboardRecyclerView.setLayoutManager(layoutManager);
         leaderboardRecyclerView.setHasFixedSize(true);
     }
+
+    private UserScore[] GetLocalScores(){
+        UserScore[] userScores = tempClass.getUserScores();
+        return userScores;
+    }
+
 }

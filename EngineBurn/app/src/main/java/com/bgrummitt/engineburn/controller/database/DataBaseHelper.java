@@ -14,17 +14,10 @@ import android.util.Log;
 
 public class DataBaseHelper extends SQLiteOpenHelper {
 
-    private final static String TAG = DataBaseHelper.class.getSimpleName();
-    public final static String DB_NAME_SETTINGS ="GAME_SETTINGS.db";
-    public final static String DB_NAME_LEADERBOARD = "LOCAL_LEADERBOARD.db";
-    public final static String DB_TABLE_NAME_SETTINGS = "GAME_SETTINGS";
-    public final static String DB_TABLE_NAME_LEADERBOARD = "LOCAL_LEADERBOARD";
-    final static public String SETTING_NAME_COLUMN = "SETTING_NAME";
-    final static public String SETTING_SETTING_COLUMN = "SETTING_VALUE";
-    final static public String CHARACTER_SKIN_SETTING = "CHARACTER_SKIN";
-    private static String DB_PATH = "";
+    final static private String TAG = DataBaseHelper.class.getSimpleName();
+    static private String DB_PATH = "";
+    final private Context mContext;
     private SQLiteDatabase mDataBase;
-    private final Context mContext;
 
     public DataBaseHelper(Context context, String db_name) {
         // Pass the context name and version to the super class
@@ -98,6 +91,9 @@ public class DataBaseHelper extends SQLiteOpenHelper {
         return mDataBase != null;
     }
 
+    /**
+     * Function to close the database synchronized so it isn't
+     */
     @Override
     public synchronized void close() {
         if(mDataBase != null)

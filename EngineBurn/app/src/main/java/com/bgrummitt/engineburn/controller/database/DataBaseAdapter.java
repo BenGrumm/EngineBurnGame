@@ -1,8 +1,6 @@
 package com.bgrummitt.engineburn.controller.database;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -99,25 +97,8 @@ public class DataBaseAdapter {
         }
     }
 
-    //This is effectively what is sent when the .update function is used in the editSetting function
-    private final String mEditSettingSql = "UPDATE %s SET %s = '%s' WHERE %s = '%s'";
-
-    /**
-     * Function to edit the settings in the database
-     * @param settingName the name of the setting in the column
-     * @param newSetting the new data to replace the old
-     */
-    public void editSetting(String settingName, String newSetting){
-        try {
-            ContentValues cv = new ContentValues();
-            cv.put(DataBaseHelper.SETTING_SETTING_COLUMN, newSetting);
-            // Update the Table in a very similar string to mEditSettingSql string with setting in it
-            int NumberOfAffectedRows = mDb.update(mDBName, cv,DataBaseHelper.SETTING_NAME_COLUMN + " = ?", new String[]{settingName});
-            Log.v(TAG, String.format("%d Rows Edited", NumberOfAffectedRows));
-        } catch (SQLException mSQLException) {
-            Log.e(TAG, "getTestData >>"+ mSQLException.toString());
-            throw mSQLException;
-        }
+    public SQLiteDatabase getDb() {
+        return mDb;
     }
 
 }

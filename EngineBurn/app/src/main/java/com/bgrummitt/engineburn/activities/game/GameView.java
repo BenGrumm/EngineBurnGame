@@ -13,7 +13,7 @@ import com.bgrummitt.engineburn.activities.gameover.GameOverActivity;
 import com.bgrummitt.engineburn.controller.characters.GameCharacter;
 import com.bgrummitt.engineburn.controller.characters.GameCharacters;
 import com.bgrummitt.engineburn.controller.database.DataBaseAdapter;
-import com.bgrummitt.engineburn.controller.database.DataBaseHelper;
+import com.bgrummitt.engineburn.controller.database.DataBaseSettingsAdapter;
 import com.bgrummitt.engineburn.controller.game.EngineBurn;
 import com.bgrummitt.engineburn.controller.game.GameThread;
 
@@ -167,13 +167,13 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      */
     public GameCharacter getCurrentCharacter(){
         //Create new database adapter passing context
-        DataBaseAdapter mDbHelper = new DataBaseAdapter(mContext, DataBaseHelper.DB_TABLE_NAME_SETTINGS);
+        DataBaseAdapter mDbHelper = new DataBaseAdapter(mContext, DataBaseSettingsAdapter.DB_TABLE_NAME_SETTINGS);
         //Create and open database
         mDbHelper.createDatabase();
         mDbHelper.open();
         //Get the setting from the database passing the Final variable for the character in the DatabaseAdapter
-        // getDBEntry(String column, String columnComparingTo, String entryName)
-        String characterName = mDbHelper.getDBEntry(DataBaseHelper.SETTING_SETTING_COLUMN, DataBaseHelper.SETTING_NAME_COLUMN, DataBaseHelper.CHARACTER_SKIN_SETTING);
+        // getDBEntry(String columnToReturn, String columnComparingNameTo, String entryNameToFind)
+        String characterName = mDbHelper.getDBEntry(DataBaseSettingsAdapter.SETTING_SETTING_COLUMN, DataBaseSettingsAdapter.SETTING_NAME_COLUMN, DataBaseSettingsAdapter.CHARACTER_SKIN_SETTING);
         mDbHelper.close();
 
         //Using the name return the character from the game characters getCharacter static variable
