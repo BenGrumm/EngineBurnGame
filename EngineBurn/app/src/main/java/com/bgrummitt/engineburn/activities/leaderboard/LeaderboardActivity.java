@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.bgrummitt.engineburn.R;
+import com.bgrummitt.engineburn.controller.database.DataBaseLocalLeaderboardAdapter;
 import com.bgrummitt.engineburn.controller.leaderboard.UserScore;
 
 public class LeaderboardActivity extends Activity {
@@ -88,7 +89,11 @@ public class LeaderboardActivity extends Activity {
     }
 
     private UserScore[] GetLocalScores(){
-        UserScore[] userScores = tempClass.getUserScores();
+        DataBaseLocalLeaderboardAdapter mDb = new DataBaseLocalLeaderboardAdapter(this);
+        mDb.createDatabase();
+        mDb.open();
+        UserScore[] userScores = mDb.getTopScores();
+        mDb.close();
         return userScores;
     }
 
