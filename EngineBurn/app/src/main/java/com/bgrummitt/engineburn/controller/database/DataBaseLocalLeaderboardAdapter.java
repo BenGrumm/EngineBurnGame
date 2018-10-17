@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.util.Log;
 
 import com.bgrummitt.engineburn.controller.leaderboard.UserScore;
+import com.bgrummitt.engineburn.controller.other.LowScoreException;
 
 import java.sql.SQLException;
 
@@ -81,6 +82,20 @@ public class DataBaseLocalLeaderboardAdapter extends DataBaseAdapter {
         }
         mCur.close();
         return integerArr;
+    }
+
+    public void submitScore(UserScore score) throws LowScoreException {
+        int[] scores = getIntArray(COLUMN_SCORE);
+        int userScore = Integer.parseInt(score.getScore());
+        int newPosition;
+        if(userScore <= scores[9]){
+            throw new LowScoreException("Score Is Less Or Equal To The Lowest On Leaderboard");
+        }
+        for(int i = 0; i < 10; i++){
+            if(userScore > scores[i]){
+                newPosition = i;
+            }
+        }
     }
 
 }

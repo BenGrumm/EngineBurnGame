@@ -12,13 +12,15 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.bgrummitt.engineburn.R;
+import com.bgrummitt.engineburn.activities.leaderboard.LeaderboardActivity;
 
 import java.util.Locale;
 
 public class GameOverActivity extends Activity {
 
+    final static public String SCORE_EXTRA = "SCORE_EXTRA";
+
     final static private String TAG = GameOverActivity.class.getSimpleName();
-    final static private String SCORE_EXTRA = "SCORE_EXTRA";
 
     private int mFinalGameScore;
 
@@ -45,6 +47,7 @@ public class GameOverActivity extends Activity {
         //Retrieve buttons
         Button mButtonRestartGame = findViewById(R.id.restartGameButtonGameOver);
         Button mButtonHome = findViewById(R.id.HomeButton);
+        Button mButtonLeaderboard = findViewById(R.id.leaderboardButton);
 
         mButtonRestartGame.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,6 +62,15 @@ public class GameOverActivity extends Activity {
             public void onClick(View v) {
                 setResult(2);
                 finish();
+            }
+        });
+
+        mButtonLeaderboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(GameOverActivity.this, LeaderboardActivity.class);
+                intent.putExtra(SCORE_EXTRA, mFinalGameScore);
+                startActivity(intent);
             }
         });
     }
