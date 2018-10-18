@@ -176,6 +176,7 @@ public class LeaderboardActivity extends Activity {
         DataBaseLocalLeaderboardAdapter mDb = new DataBaseLocalLeaderboardAdapter(LeaderboardActivity.this);
         mDb.createDatabase();
         mDb.open();
+        // Try to add score to db is the score is not high enough the exception will be caught and a toast is made
         try {
             mDb.submitScore(new UserScore("Temp Name", Integer.toString(userScore), "-1"));
         }catch (LowScoreException e){
