@@ -1,13 +1,13 @@
 package com.bgrummitt.engineburn.controller.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.util.Log;
 
 import com.bgrummitt.engineburn.controller.leaderboard.UserScore;
 import com.bgrummitt.engineburn.controller.other.LowScoreException;
-
-import java.sql.SQLException;
 
 public class DataBaseLocalLeaderboardAdapter extends DataBaseAdapter {
 
@@ -22,7 +22,7 @@ public class DataBaseLocalLeaderboardAdapter extends DataBaseAdapter {
         super(context, TABLE_NAME);
     }
 
-    final static public String SELECT_ALL = "SELECT %s FROM " + TABLE_NAME + " ORDER BY " + COLUMN_SCORE + " ASC;";
+    final static public String SELECT_ALL = "SELECT %s FROM " + TABLE_NAME + " ORDER BY " + COLUMN_SCORE + " DESC;";
 
     /**
      * Function to get the top scores from the database
@@ -84,18 +84,33 @@ public class DataBaseLocalLeaderboardAdapter extends DataBaseAdapter {
         return integerArr;
     }
 
+    /**
+     * Add the new score to the database if it is big enough
+     * @param score UserScore class containing name and score
+     * @throws LowScoreException if score is too low
+     */
     public void submitScore(UserScore score) throws LowScoreException {
         int[] scores = getIntArray(COLUMN_SCORE);
         int userScore = Integer.parseInt(score.getScore());
-        int newPosition;
+        // If the score is not higher than the lowest score throw an exception
         if(userScore <= scores[9]){
             throw new LowScoreException("Score Is Less Or Equal To The Lowest On Leaderboard");
         }
-        for(int i = 0; i < 10; i++){
-            if(userScore > scores[i]){
-                newPosition = i;
-            }
-        }
+
+        // Get the lowest scores id
+        int[] userScoreIDs = getIntArray(BaseColumns._ID);
+        int replaceID = userScoreIDs[9];
+
+        // Update the name
+        ContentValues cvName = new ContentValues();
+        cvName.put(COLUMN_NAME, score.getName());
+        getDb().update(TABLE_NAME, cvName, BaseColumns._ID + " = ?", new String[]{Integer.toString(replaceID)});
+
+        // Update the Score
+        ContentValues cvScore = new ContentValues();
+        cvScore.put(COLUMN_SCORE, score.getScore());
+        getDb().update(TABLE_NAME, cvScore, BaseColumns._ID + " = ?", new String[]{Integer.toString(replaceID)});
+
     }
 
 }

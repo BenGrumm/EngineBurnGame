@@ -15,11 +15,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bgrummitt.engineburn.R;
 import com.bgrummitt.engineburn.activities.gameover.GameOverActivity;
 import com.bgrummitt.engineburn.controller.database.DataBaseLocalLeaderboardAdapter;
 import com.bgrummitt.engineburn.controller.leaderboard.UserScore;
+import com.bgrummitt.engineburn.controller.other.LowScoreException;
 
 public class LeaderboardActivity extends Activity {
 
@@ -94,8 +96,7 @@ public class LeaderboardActivity extends Activity {
             }
         });
 
-        UserScore[] userScoreArray = GetLocalScores();
-        leaderboardRecyclerView.setAdapter(new LeaderboardAdapter(this, userScoreArray));
+        setRecyclerView();
 
         if(userScore > 0){
             addScoreSaveFunctionality();
@@ -134,6 +135,14 @@ public class LeaderboardActivity extends Activity {
 
         // Apply this new layout
         set.applyTo(leaderboardConstraintLayout);
+
+        saveScoreButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveScore();
+                setRecyclerView();
+            }
+        });
     }
 
     /**
@@ -149,6 +158,30 @@ public class LeaderboardActivity extends Activity {
         UserScore[] userScores = mDb.getTopScores();
         mDb.close();
         return userScores;
+    }
+
+    /**
+     * Function to populate the recycler view
+     */
+    public void setRecyclerView(){
+        UserScore[] userScoreArray = GetLocalScores();
+        leaderboardRecyclerView.setAdapter(new LeaderboardAdapter(this, userScoreArray));
+    }
+
+    /**
+     * Function to save the score to the database
+     */
+    public void saveScore(){
+        // Open and create database
+        DataBaseLocalLeaderboardAdapter mDb = new DataBaseLocalLeaderboardAdapter(LeaderboardActivity.this);
+        mDb.createDatabase();
+        mDb.open();
+        try {
+            mDb.submitScore(new UserScore("Temp Name", Integer.toString(userScore), "-1"));
+        }catch (LowScoreException e){
+            Toast.makeText(LeaderboardActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        mDb.close();
     }
 
 }
