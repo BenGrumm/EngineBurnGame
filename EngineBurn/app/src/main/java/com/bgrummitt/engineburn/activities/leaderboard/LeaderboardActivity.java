@@ -1,6 +1,7 @@
 package com.bgrummitt.engineburn.activities.leaderboard;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -8,12 +9,14 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,11 +30,18 @@ public class LeaderboardActivity extends Activity {
 
     final static private String TAG = LeaderboardActivity.class.getSimpleName();
 
+    private String leaderBoardType = "Local";
+    private Boolean canLocalSave = true;
+    private Boolean canGlobalSave = true;
+    private Boolean isButtonActive = false;
+
     private Button leaderboardLocalButton;
     private Button leaderboardGlobalButton;
     private RecyclerView leaderboardRecyclerView;
     private TextView leaderboardLabelTextView;
     private ConstraintLayout leaderboardConstraintLayout;
+
+    private Button saveScoreButton;
 
     private int userScore;
 
@@ -74,14 +84,32 @@ public class LeaderboardActivity extends Activity {
         final Drawable clicked = getResources().getDrawable(R.drawable.button_clicked);
         final Drawable notClicked = getResources().getDrawable(R.drawable.button_not_clicked);
 
+        // If the userScore is 0 add the button to save else set can save locally and globally to false
+        if(userScore > 0){
+            addScoreSaveFunctionality();
+        }else{
+            canLocalSave = false;
+            canGlobalSave = false;
+        }
+
         // On Click Listener for the local leaderboard button
         leaderboardLocalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                leaderBoardType = "Local";
                 //Rename label and flip button backgrounds
                 leaderboardLabelTextView.setText("Local Leaderboard");
                 leaderboardLocalButton.setBackground(clicked);
                 leaderboardGlobalButton.setBackground(notClicked);
+
+                // If the user can save locally and it is not active activate button
+                if(canLocalSave && !isButtonActive){
+                    addScoreSaveFunctionality();
+                }
+                // If the button was active but cant locally save remove the button
+                else if(isButtonActive && !canLocalSave){
+                    RemoveSaveButton();
+                }
             }
         });
 
@@ -89,18 +117,25 @@ public class LeaderboardActivity extends Activity {
         leaderboardGlobalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                leaderBoardType = "Global";
                 //Rename label and flip button backgrounds
                 leaderboardLabelTextView.setText("Global Leaderboard");
                 leaderboardGlobalButton.setBackground(clicked);
                 leaderboardLocalButton.setBackground(notClicked);
+
+                // If the user can save globally and it is not active activate the button
+                if(canGlobalSave && !isButtonActive){
+                    addScoreSaveFunctionality();
+                }
+                // If the button was active but cant globally save remove the button
+                else if(isButtonActive && !canGlobalSave){
+                    RemoveSaveButton();
+                }
             }
         });
 
+        // Populate the recycler view
         setRecyclerView();
-
-        if(userScore > 0){
-            addScoreSaveFunctionality();
-        }
 
         //Set the layout manager and tell the recycler view that the number of users scores will not change
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
@@ -115,9 +150,10 @@ public class LeaderboardActivity extends Activity {
         ConstraintSet set = new ConstraintSet();
 
         // Create a new button
-        Button saveScoreButton = new Button(this);
+        saveScoreButton = new Button(this);
         saveScoreButton.setText("Save Score");
         saveScoreButton.setId(View.generateViewId());
+
         // Add the button to the view
         leaderboardConstraintLayout.addView(saveScoreButton);
 
@@ -139,10 +175,31 @@ public class LeaderboardActivity extends Activity {
         saveScoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveScore();
-                setRecyclerView();
+                SaveScoreDialog dialog = SaveScoreDialog.newInstance(leaderBoardType);
+                dialog.show(getFragmentManager(), "save");
             }
         });
+
+        isButtonActive = true;
+    }
+
+    /**
+     * Function to remove button from constraint layout
+     */
+    public void RemoveSaveButton(){
+        ConstraintSet set = new ConstraintSet();
+        // Clone the layout
+        set.clone(leaderboardConstraintLayout);
+        // Remove button
+        set.clear(saveScoreButton.getId());
+        // Constrain the recycler view to the bottom of the activity
+        set.connect(leaderboardRecyclerView.getId(), ConstraintSet.BOTTOM,
+                leaderboardConstraintLayout.getId(), ConstraintSet.BOTTOM);
+        // Apply the layout
+        set.applyTo(leaderboardConstraintLayout);
+        // Remove the button from the layout
+        leaderboardConstraintLayout.removeView(saveScoreButton);
+        isButtonActive = false;
     }
 
     /**
@@ -171,18 +228,38 @@ public class LeaderboardActivity extends Activity {
     /**
      * Function to save the score to the database
      */
-    public void saveScore(){
+    public void saveScore(String name){
         // Open and create database
         DataBaseLocalLeaderboardAdapter mDb = new DataBaseLocalLeaderboardAdapter(LeaderboardActivity.this);
         mDb.createDatabase();
         mDb.open();
         // Try to add score to db is the score is not high enough the exception will be caught and a toast is made
         try {
-            mDb.submitScore(new UserScore("Temp Name", Integer.toString(userScore), "-1"));
+            mDb.submitScore(new UserScore(name, Integer.toString(userScore), "-1"));
         }catch (LowScoreException e){
             Toast.makeText(LeaderboardActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
         mDb.close();
+    }
+
+    /**
+     * Function called when the dialog is closed
+     * @param name the name in the dialog
+     */
+    public void OnDialogClose(String name){
+        // Save the score to the database
+        saveScore(name);
+        // Refresh the recycler view
+        setRecyclerView();
+        //Remove the button
+        RemoveSaveButton();
+        // If the leaderboard selected is the local leaderboard else if it is the global
+        // set save to false
+        if(leaderBoardType.equals("Local")) {
+            canLocalSave = false;
+        }else if(leaderBoardType.equals("Global")){
+            canGlobalSave = false;
+        }
     }
 
 }

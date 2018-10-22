@@ -5,4 +5,7 @@
     <string name="resume_game">Resume</string>
     <string name="local">Local</string>
     <string name="global">Global</string>
+    <string name="dialog_name">Name</string>
+    <string name="dialog_name_prompt">Enter The Name You Would Like To Appear On The %s Leaderboard :</string>
+    <string name="save">Save</string>
 </resources>
