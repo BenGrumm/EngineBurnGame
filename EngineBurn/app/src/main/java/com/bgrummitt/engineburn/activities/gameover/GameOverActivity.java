@@ -22,6 +22,10 @@ public class GameOverActivity extends Activity {
 
     final static private String TAG = GameOverActivity.class.getSimpleName();
 
+    final static public int Leaderboard_Result = 58;
+
+    private Boolean hasSavedLocally = false;
+    private Boolean hasSavedGlobally = false;
     private int mFinalGameScore;
 
     @Override
@@ -49,6 +53,7 @@ public class GameOverActivity extends Activity {
         Button mButtonHome = findViewById(R.id.HomeButton);
         Button mButtonLeaderboard = findViewById(R.id.leaderboardButton);
 
+        // If the restart game button is click set result to 3 and finish the activity
         mButtonRestartGame.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +62,7 @@ public class GameOverActivity extends Activity {
             }
         });
 
+        // If the home button is click set result to 2 and finish the activity
         mButtonHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -65,13 +71,31 @@ public class GameOverActivity extends Activity {
             }
         });
 
+        // If the leaderboard button is clicked create a new intent with the score from the game, and is the
+        // scores have been saved as extras and start the activity looking for Leaderboard_Result (58)
         mButtonLeaderboard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(GameOverActivity.this, LeaderboardActivity.class);
                 intent.putExtra(SCORE_EXTRA, mFinalGameScore);
-                startActivity(intent);
+                intent.putExtra(LeaderboardActivity.Local_Save_Extra, !hasSavedLocally);
+                intent.putExtra(LeaderboardActivity.Global_Save_Extra, !hasSavedGlobally);
+                startActivityForResult(intent, GameOverActivity.Leaderboard_Result);
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d(TAG, Integer.toString(resultCode));
+
+        switch (requestCode){
+            case Leaderboard_Result:
+                hasSavedLocally = !data.getBooleanExtra(LeaderboardActivity.Local_Save_Extra, false);
+                hasSavedGlobally = !data.getBooleanExtra(LeaderboardActivity.Global_Save_Extra, false);
+                break;
+        }
     }
 }

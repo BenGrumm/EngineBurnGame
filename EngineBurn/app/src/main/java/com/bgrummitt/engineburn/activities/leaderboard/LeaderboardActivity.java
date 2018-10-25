@@ -29,11 +29,15 @@ import com.bgrummitt.engineburn.controller.other.LowScoreException;
 public class LeaderboardActivity extends Activity {
 
     final static private String TAG = LeaderboardActivity.class.getSimpleName();
+    final static public String Local_Save_Extra = "Can_Local_Save_Extra";
+    final static public String Global_Save_Extra = "Can_Global_Save_Extra";
 
     private String leaderBoardType = "Local";
-    private Boolean canLocalSave = true;
-    private Boolean canGlobalSave = true;
+    private Boolean canLocalSave;
+    private Boolean canGlobalSave;
     private Boolean isButtonActive = false;
+
+    private Intent returnIntent;
 
     private Button leaderboardLocalButton;
     private Button leaderboardGlobalButton;
@@ -53,6 +57,13 @@ public class LeaderboardActivity extends Activity {
         // Get the intent and get the score, if the score does not exist set the score to -1
         Intent intent = getIntent();
         userScore = intent.getIntExtra(GameOverActivity.SCORE_EXTRA, -1);
+        canLocalSave = intent.getBooleanExtra(Local_Save_Extra, false);
+        canGlobalSave = intent.getBooleanExtra(Global_Save_Extra, false);
+
+        // Initialise the return intent
+        returnIntent = new Intent();
+        returnIntent.putExtra(Local_Save_Extra, canLocalSave);
+        returnIntent.putExtra(Global_Save_Extra, canGlobalSave);
 
         // Retrieve all the id's
         leaderboardConstraintLayout = findViewById(R.id.leaderboardLayout);
@@ -141,6 +152,8 @@ public class LeaderboardActivity extends Activity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         leaderboardRecyclerView.setLayoutManager(layoutManager);
         leaderboardRecyclerView.setHasFixedSize(true);
+
+        setResult(GameOverActivity.Leaderboard_Result, returnIntent);
     }
 
     /**
@@ -257,9 +270,14 @@ public class LeaderboardActivity extends Activity {
         // set save to false
         if(leaderBoardType.equals("Local")) {
             canLocalSave = false;
+            returnIntent.putExtra(Local_Save_Extra, canLocalSave);
         }else if(leaderBoardType.equals("Global")){
             canGlobalSave = false;
+            returnIntent.putExtra(Global_Save_Extra, canLocalSave);
         }
+        setResult(GameOverActivity.Leaderboard_Result, returnIntent);
     }
+
+
 
 }
