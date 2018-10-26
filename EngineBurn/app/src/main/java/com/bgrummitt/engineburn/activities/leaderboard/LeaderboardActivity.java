@@ -121,6 +121,9 @@ public class LeaderboardActivity extends Activity {
                 else if(isButtonActive && !canLocalSave){
                     RemoveSaveButton();
                 }
+
+                // Refresh recycler view so it will show local leaderboard
+                setRecyclerView();
             }
         });
 
@@ -142,6 +145,9 @@ public class LeaderboardActivity extends Activity {
                 else if(isButtonActive && !canGlobalSave){
                     RemoveSaveButton();
                 }
+
+                // Refresh recycler view so it will show global leaderboard
+                setRecyclerView();
             }
         });
 
@@ -230,18 +236,51 @@ public class LeaderboardActivity extends Activity {
         return userScores;
     }
 
+    private UserScore[] GetGlobalScores() {
+        // TODO Implement global leaderboard retrieval
+        UserScore[] tempGlobalUserScores = new UserScore[10];
+        for(int i = 0; i < 10; i++){
+            tempGlobalUserScores[i] = new UserScore("Name" + i, Integer.toString(i * 10), Integer.toString(i + 1));
+        }
+        return tempGlobalUserScores;
+    }
+
     /**
      * Function to populate the recycler view
      */
     public void setRecyclerView(){
-        UserScore[] userScoreArray = GetLocalScores();
+        UserScore[] userScoreArray = leaderBoardType.equals("Local") ? GetLocalScores() : GetGlobalScores();
         leaderboardRecyclerView.setAdapter(new LeaderboardAdapter(this, userScoreArray));
     }
 
     /**
-     * Function to save the score to the database
+     * Function called when the dialog is closed
+     * @param name the name in the dialog
      */
-    public void saveScore(String name){
+    public void OnDialogClose(String name){
+        // If the leaderboard selected is the local leaderboard else if it is the global
+        // save score to respective leaderboard and set if can save to false
+        if(leaderBoardType.equals("Local")) {
+            saveScoreToLocal(name);
+            canLocalSave = false;
+            returnIntent.putExtra(Local_Save_Extra, canLocalSave);
+        }else if(leaderBoardType.equals("Global")){
+            saveScoreToGlobal(name);
+            canGlobalSave = false;
+            returnIntent.putExtra(Global_Save_Extra, canLocalSave);
+        }
+        setResult(GameOverActivity.Leaderboard_Result, returnIntent);
+        // Refresh the recycler view
+        setRecyclerView();
+        //Remove the button
+        RemoveSaveButton();
+    }
+
+    private void saveScoreToGlobal(String name) {
+        // TODO Save Score To Global
+    }
+
+    private void saveScoreToLocal(String name) {
         // Open and create database
         DataBaseLocalLeaderboardAdapter mDb = new DataBaseLocalLeaderboardAdapter(LeaderboardActivity.this);
         mDb.createDatabase();
@@ -254,30 +293,5 @@ public class LeaderboardActivity extends Activity {
         }
         mDb.close();
     }
-
-    /**
-     * Function called when the dialog is closed
-     * @param name the name in the dialog
-     */
-    public void OnDialogClose(String name){
-        // Save the score to the database
-        saveScore(name);
-        // Refresh the recycler view
-        setRecyclerView();
-        //Remove the button
-        RemoveSaveButton();
-        // If the leaderboard selected is the local leaderboard else if it is the global
-        // set save to false
-        if(leaderBoardType.equals("Local")) {
-            canLocalSave = false;
-            returnIntent.putExtra(Local_Save_Extra, canLocalSave);
-        }else if(leaderBoardType.equals("Global")){
-            canGlobalSave = false;
-            returnIntent.putExtra(Global_Save_Extra, canLocalSave);
-        }
-        setResult(GameOverActivity.Leaderboard_Result, returnIntent);
-    }
-
-
 
 }
