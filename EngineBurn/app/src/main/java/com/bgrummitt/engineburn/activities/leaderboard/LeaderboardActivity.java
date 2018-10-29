@@ -96,8 +96,11 @@ public class LeaderboardActivity extends Activity {
         final Drawable notClicked = getResources().getDrawable(R.drawable.button_not_clicked);
 
         // If the userScore is 0 add the button to save else set can save locally and globally to false
-        if(userScore > 0){
+        if(userScore > 0 && canLocalSave || canGlobalSave){
             addScoreSaveFunctionality();
+            if(!canLocalSave){
+                RemoveSaveButton();
+            }
         }else{
             canLocalSave = false;
             canGlobalSave = false;
@@ -276,10 +279,18 @@ public class LeaderboardActivity extends Activity {
         RemoveSaveButton();
     }
 
+    /**
+     * Save the score with given name to the global leaderboard
+     * @param name the name the user has chosen in the dialog
+     */
     private void saveScoreToGlobal(String name) {
         // TODO Save Score To Global
     }
 
+    /**
+     * Save the score with the given name to the local leaderboard
+     * @param name the name the user has chosen in the dialog
+     */
     private void saveScoreToLocal(String name) {
         // Open and create database
         DataBaseLocalLeaderboardAdapter mDb = new DataBaseLocalLeaderboardAdapter(LeaderboardActivity.this);
