@@ -25,6 +25,9 @@ import com.bgrummitt.engineburn.activities.gameover.GameOverActivity;
 import com.bgrummitt.engineburn.controller.database.DataBaseLocalLeaderboardAdapter;
 import com.bgrummitt.engineburn.controller.leaderboard.UserScore;
 import com.bgrummitt.engineburn.controller.other.LowScoreException;
+import com.bgrummitt.engineburn.controller.server.connection.Client;
+
+import java.io.IOException;
 
 public class LeaderboardActivity extends Activity {
 
@@ -241,9 +244,14 @@ public class LeaderboardActivity extends Activity {
 
     private UserScore[] GetGlobalScores() {
         // TODO Implement global leaderboard retrieval
-        UserScore[] tempGlobalUserScores = new UserScore[10];
-        for(int i = 0; i < 10; i++){
-            tempGlobalUserScores[i] = new UserScore("Name" + i, Integer.toString(i * 10), Integer.toString(i + 1));
+        UserScore[] tempGlobalUserScores;
+        Client client = new Client();
+        try {
+            client.run();
+            tempGlobalUserScores = client.getScores();
+            client.close();
+        }catch (IOException ioException){
+            tempGlobalUserScores = new UserScore[10];
         }
         return tempGlobalUserScores;
     }
