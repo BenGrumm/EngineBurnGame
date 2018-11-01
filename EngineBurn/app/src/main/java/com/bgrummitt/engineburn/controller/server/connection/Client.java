@@ -1,5 +1,6 @@
 package com.bgrummitt.engineburn.controller.server.connection;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.bgrummitt.engineburn.controller.leaderboard.UserScore;
@@ -10,7 +11,7 @@ import java.net.Socket;
 import java.io.PrintWriter;
 import java.io.IOException;
 
-public class Client{
+public class Client {
 
     final static public String TAG = Client.class.getSimpleName();
 
@@ -22,20 +23,21 @@ public class Client{
     private PrintWriter out;
     private Socket socket;
 
-    public static void main(String[] args){
-        Client user = new Client();
-        try{
-            user.run();
-            UserScore[] scores = user.getScores();
-            for(int i = 0; i < 10; i++){
-                System.out.println(String.format("Name = %s, Score = %s, Position = %s", scores[i].getName(), scores[i].getScore(), scores[i].getPosition()));
-            }
-        }catch(IOException except){
-            System.out.println(except.toString());
-        }
-    }
+//    public static void main(String[] args){
+//        Client user = new Client();
+//        try{
+//            user.run();
+//            UserScore[] scores = user.getScores();
+//            for(int i = 0; i < 10; i++){
+//                System.out.println(String.format("Name = %s, Score = %s, Position = %s", scores[i].getName(), scores[i].getScore(), scores[i].getPosition()));
+//            }
+//        }catch(IOException except){
+//            System.out.println(except.toString());
+//        }
+//    }
 
-    public void run() throws IOException{
+    public void Start() throws IOException{
+        Log.d(TAG, "Starting Up Socket");
         socket = new Socket(ip, PORT);
 
         in = new BufferedReader(new InputStreamReader(
@@ -50,9 +52,11 @@ public class Client{
             socket.close();
             throw new IOException("Could Not Successfully Open Socket");
         }
+        Log.d(TAG, "Connected To Socket");
     }
 
     public UserScore[] getScores() throws IOException{
+        Log.d(TAG, "Retrieving Scores");
         UserScore[] userScores = new UserScore[10];
 
         out.println("GET_SCORES");
@@ -67,6 +71,8 @@ public class Client{
             }
             userScores[i] = new UserScore(user[0], user[1], user[2]);
         }
+
+        Log.d(TAG, "UserScores Collected");
 
         return userScores;
     }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -47,9 +48,12 @@ public class LeaderboardActivity extends Activity {
     private RecyclerView leaderboardRecyclerView;
     private TextView leaderboardLabelTextView;
     private ConstraintLayout leaderboardConstraintLayout;
-
     private Button saveScoreButton;
+    private Drawable clicked;
+    private Drawable notClicked;
 
+    private UserScore[] localScoresArray;
+    private UserScore[] globalScoresArray;
     private int userScore;
 
     @Override
@@ -95,8 +99,8 @@ public class LeaderboardActivity extends Activity {
         getWindow().setAttributes(params);
 
         // Get the button layouts for when there label is the selected leaderboard and not
-        final Drawable clicked = getResources().getDrawable(R.drawable.button_clicked);
-        final Drawable notClicked = getResources().getDrawable(R.drawable.button_not_clicked);
+        clicked = getResources().getDrawable(R.drawable.button_clicked);
+        notClicked = getResources().getDrawable(R.drawable.button_not_clicked);
 
         // If the userScore is 0 add the button to save else set can save locally and globally to false
         if(userScore > 0 && canLocalSave || canGlobalSave){
@@ -109,27 +113,16 @@ public class LeaderboardActivity extends Activity {
             canGlobalSave = false;
         }
 
+        localScoresArray = GetLocalScores();
+        GetGlobalScores();
+
         // On Click Listener for the local leaderboard button
         leaderboardLocalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                leaderBoardType = "Local";
-                //Rename label and flip button backgrounds
-                leaderboardLabelTextView.setText("Local Leaderboard");
-                leaderboardLocalButton.setBackground(clicked);
-                leaderboardGlobalButton.setBackground(notClicked);
-
-                // If the user can save locally and it is not active activate button
-                if(canLocalSave && !isButtonActive){
-                    addScoreSaveFunctionality();
+                if(!leaderBoardType.equals("Local")) {
+                    SwitchViewToLocal();
                 }
-                // If the button was active but cant locally save remove the button
-                else if(isButtonActive && !canLocalSave){
-                    RemoveSaveButton();
-                }
-
-                // Refresh recycler view so it will show local leaderboard
-                setRecyclerView();
             }
         });
 
@@ -137,23 +130,11 @@ public class LeaderboardActivity extends Activity {
         leaderboardGlobalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                leaderBoardType = "Global";
-                //Rename label and flip button backgrounds
-                leaderboardLabelTextView.setText("Global Leaderboard");
-                leaderboardGlobalButton.setBackground(clicked);
-                leaderboardLocalButton.setBackground(notClicked);
-
-                // If the user can save globally and it is not active activate the button
-                if(canGlobalSave && !isButtonActive){
-                    addScoreSaveFunctionality();
+                if(globalScoresArray != null && globalScoresArray[0] != null) {
+                    SwitchViewToGlobal();
+                }else{
+                    Log.d(TAG, "An error occurred retrieving scores");
                 }
-                // If the button was active but cant globally save remove the button
-                else if(isButtonActive && !canGlobalSave){
-                    RemoveSaveButton();
-                }
-
-                // Refresh recycler view so it will show global leaderboard
-                setRecyclerView();
             }
         });
 
@@ -242,25 +223,17 @@ public class LeaderboardActivity extends Activity {
         return userScores;
     }
 
-    private UserScore[] GetGlobalScores() {
+    private void GetGlobalScores() {
         // TODO Implement global leaderboard retrieval
-        UserScore[] tempGlobalUserScores;
-        Client client = new Client();
-        try {
-            client.run();
-            tempGlobalUserScores = client.getScores();
-            client.close();
-        }catch (IOException ioException){
-            tempGlobalUserScores = new UserScore[10];
-        }
-        return tempGlobalUserScores;
+        InternetUse internetConnection = new InternetUse();
+        internetConnection.execute("Not Actually needed");
     }
 
     /**
      * Function to populate the recycler view
      */
     public void setRecyclerView(){
-        UserScore[] userScoreArray = leaderBoardType.equals("Local") ? GetLocalScores() : GetGlobalScores();
+        UserScore[] userScoreArray = leaderBoardType.equals("Local") ? localScoresArray : globalScoresArray;
         leaderboardRecyclerView.setAdapter(new LeaderboardAdapter(this, userScoreArray));
     }
 
@@ -293,6 +266,7 @@ public class LeaderboardActivity extends Activity {
      */
     private void saveScoreToGlobal(String name) {
         // TODO Save Score To Global
+        GetGlobalScores();
     }
 
     /**
@@ -311,6 +285,79 @@ public class LeaderboardActivity extends Activity {
             Toast.makeText(LeaderboardActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
         mDb.close();
+        localScoresArray = GetLocalScores();
+    }
+
+    private void SwitchViewToGlobal(){
+        leaderBoardType = "Global";
+        //Rename label and flip button backgrounds
+        leaderboardLabelTextView.setText("Global Leaderboard");
+        leaderboardGlobalButton.setBackground(clicked);
+        leaderboardLocalButton.setBackground(notClicked);
+
+        // If the user can save globally and it is not active activate the button
+        if(canGlobalSave && !isButtonActive){
+            addScoreSaveFunctionality();
+        }
+        // If the button was active but cant globally save remove the button
+        else if(isButtonActive && !canGlobalSave){
+            RemoveSaveButton();
+        }
+
+        // Refresh recycler view so it will show global leaderboard
+        setRecyclerView();
+    }
+
+    private void SwitchViewToLocal(){
+        leaderBoardType = "Local";
+        //Rename label and flip button backgrounds
+        leaderboardLabelTextView.setText("Local Leaderboard");
+        leaderboardLocalButton.setBackground(clicked);
+        leaderboardGlobalButton.setBackground(notClicked);
+
+        // If the user can save locally and it is not active activate button
+        if(canLocalSave && !isButtonActive){
+            addScoreSaveFunctionality();
+        }
+        // If the button was active but cant locally save remove the button
+        else if(isButtonActive && !canLocalSave){
+            RemoveSaveButton();
+        }
+
+        // Refresh recycler view so it will show local leaderboard
+        setRecyclerView();
+    }
+
+    public void onScoreRetrieved(UserScore[] globalScores){
+        globalScoresArray = globalScores;
+    }
+
+    // Class Used To Connect To Internet In Background
+    private class InternetUse extends AsyncTask<String, UserScore, UserScore[]>{
+
+        @Override
+        protected UserScore[] doInBackground(String... strings) {
+
+            UserScore[] scores;
+
+            try {
+                Client client = new Client();
+                client.Start();
+                scores = client.getScores();
+                client.close();
+            }catch (IOException ioException){
+                Log.e(TAG, "Error Connecting To Internet : " + ioException.toString());
+                scores = new UserScore[10];
+            }
+
+            return scores;
+        }
+
+        @Override
+        protected void onPostExecute(UserScore[] scoresArray) {
+            super.onPostExecute(scoresArray);
+            onScoreRetrieved(scoresArray);
+        }
     }
 
 }
