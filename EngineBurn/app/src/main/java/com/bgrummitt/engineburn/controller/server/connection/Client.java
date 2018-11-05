@@ -16,7 +16,7 @@ public class Client {
     final static public String TAG = Client.class.getSimpleName();
 
     // TODO Update when needed
-    final static private String ip = "?";
+    final static private String ip = "INSERT_IP_HERE";
     final static public int PORT = 9001;
 
     private BufferedReader in;
@@ -104,7 +104,7 @@ public class Client {
     public void close() throws IOException{
         // If the socket is not already closed close it
         if(!socket.isClosed()){
-            socket.close();
+//            socket.close();
         }
     }
 

@@ -134,6 +134,7 @@ public class LeaderboardActivity extends Activity {
                     SwitchViewToGlobal();
                 }else{
                     Log.d(TAG, "An error occurred retrieving scores");
+                    Toast.makeText(LeaderboardActivity.this, "Could Not Connect To Server", Toast.LENGTH_LONG).show();
                 }
             }
         });
