@@ -130,11 +130,11 @@ public class LeaderboardActivity extends Activity {
         leaderboardGlobalButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(globalScoresArray != null && globalScoresArray[0] != null) {
-                    SwitchViewToGlobal();
-                }else{
+                if(globalScoresArray == null || globalScoresArray[0] == null){
                     Log.d(TAG, "An error occurred retrieving scores");
                     Toast.makeText(LeaderboardActivity.this, "Could Not Connect To Server", Toast.LENGTH_LONG).show();
+                }else if(!leaderBoardType.equals("Global")){
+                    SwitchViewToGlobal();
                 }
             }
         });
@@ -289,6 +289,9 @@ public class LeaderboardActivity extends Activity {
         localScoresArray = GetLocalScores();
     }
 
+    /**
+     * Switch the recycler view to the Global Leaderboard Array
+     */
     private void SwitchViewToGlobal(){
         leaderBoardType = "Global";
         //Rename label and flip button backgrounds
@@ -309,6 +312,9 @@ public class LeaderboardActivity extends Activity {
         setRecyclerView();
     }
 
+    /**
+     * Switch the recycler view to the Local Leaderboard Array
+     */
     private void SwitchViewToLocal(){
         leaderBoardType = "Local";
         //Rename label and flip button backgrounds
@@ -329,7 +335,11 @@ public class LeaderboardActivity extends Activity {
         setRecyclerView();
     }
 
-    public void onScoreRetrieved(UserScore[] globalScores){
+    /**
+     * Set the global array on return from the AsyncTask
+     * @param globalScores the user scores from the global array
+     */
+    public void onGlobalScoreRetrieved(UserScore[] globalScores){
         globalScoresArray = globalScores;
     }
 
@@ -357,7 +367,7 @@ public class LeaderboardActivity extends Activity {
         @Override
         protected void onPostExecute(UserScore[] scoresArray) {
             super.onPostExecute(scoresArray);
-            onScoreRetrieved(scoresArray);
+            onGlobalScoreRetrieved(scoresArray);
         }
     }
 

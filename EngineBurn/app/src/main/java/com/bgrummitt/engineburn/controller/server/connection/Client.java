@@ -104,7 +104,7 @@ public class Client {
     public void close() throws IOException{
         // If the socket is not already closed close it
         if(!socket.isClosed()){
-//            socket.close();
+            socket.close();
         }
     }
 
