@@ -1,7 +1,9 @@
 package com.bgrummitt.engineburn.controller.server.connection;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.bgrummitt.engineburn.controller.leaderboard.UserScore;
 
@@ -16,7 +18,7 @@ public class Client {
     final static public String TAG = Client.class.getSimpleName();
 
     // TODO Update when needed
-    final static private String ip = "INSERT_IP_HERE";
+    final static private String ip = "TODO_UPDATE";
     final static public int PORT = 9001;
 
     private BufferedReader in;
@@ -77,7 +79,7 @@ public class Client {
             userScores[i] = new UserScore(user[0], user[1], user[2]);
         }
 
-        Log.d(TAG, "UserScores Collected");
+        Log.d(TAG, "UserScores Collected " + userScores[0].getName());
 
         return userScores;
     }
@@ -87,14 +89,18 @@ public class Client {
      * @param userScore the users information to add
      * @throws IOException if there is a problem with the connection
      */
-    public void addScore(UserScore userScore) throws IOException{
+    public void addScore(Context context, UserScore userScore) throws IOException{
         // Send message to expect score
         out.println("ADD_SCORE");
 
-        //TODO Add full score save function
+        if(in.readLine() == "SEND_SCORE"){
+            out.println(userScore.getName());
+            out.println(userScore.getScore());
+        }
 
-        String inputLine = in.readLine();
-        Log.d(TAG, inputLine);
+        if(in.readLine().equals("ERROR_ADDING_SCORE")){
+            Toast.makeText(context, "Error Adding Score To Global Database", Toast.LENGTH_LONG).show();
+        }
     }
 
     /**

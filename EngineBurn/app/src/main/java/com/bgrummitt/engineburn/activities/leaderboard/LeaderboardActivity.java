@@ -1,7 +1,6 @@
 package com.bgrummitt.engineburn.activities.leaderboard;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -10,14 +9,12 @@ import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -226,7 +223,7 @@ public class LeaderboardActivity extends Activity {
 
     private void GetGlobalScores() {
         // TODO Implement global leaderboard retrieval
-        InternetUse internetConnection = new InternetUse();
+        InternetUseGetScore internetConnection = new InternetUseGetScore();
         internetConnection.execute("Not Actually needed");
     }
 
@@ -266,7 +263,9 @@ public class LeaderboardActivity extends Activity {
      * @param name the name the user has chosen in the dialog
      */
     private void saveScoreToGlobal(String name) {
-        // TODO Save Score To Global
+        InternetUseAddScore internetUseAddScore = new InternetUseAddScore();
+        UserScore userScoreClass = new UserScore(name, Integer.toString(userScore), "0");
+        internetUseAddScore.execute(userScoreClass);
         GetGlobalScores();
     }
 
@@ -344,7 +343,7 @@ public class LeaderboardActivity extends Activity {
     }
 
     // Class Used To Connect To Internet In Background
-    private class InternetUse extends AsyncTask<String, UserScore, UserScore[]>{
+    private class InternetUseGetScore extends AsyncTask<String, UserScore, UserScore[]>{
 
         @Override
         protected UserScore[] doInBackground(String... strings) {
@@ -369,6 +368,25 @@ public class LeaderboardActivity extends Activity {
             super.onPostExecute(scoresArray);
             onGlobalScoreRetrieved(scoresArray);
         }
+    }
+
+    private class InternetUseAddScore extends AsyncTask<UserScore, Void, Void> {
+
+        @Override
+        protected Void doInBackground(UserScore... userScores) {
+
+            try {
+                Client client = new Client();
+                client.Start();
+                client.addScore(LeaderboardActivity.this, userScores[0]);
+                client.close();
+            }catch (IOException ioException){
+                Log.e(TAG, "Error Connecting To Internet : " + ioException.toString());
+            }
+
+            return null;
+        }
+
     }
 
 }
