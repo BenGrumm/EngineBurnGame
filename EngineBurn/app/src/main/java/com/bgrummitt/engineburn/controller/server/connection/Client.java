@@ -93,7 +93,8 @@ public class Client {
         // Send message to expect score
         out.println("ADD_SCORE");
 
-        if(in.readLine() == "SEND_SCORE"){
+        if(in.readLine().equals("SEND_SCORE")){
+            Log.d(TAG, "Adding Score");
             out.println(userScore.getName());
             out.println(userScore.getScore());
         }
