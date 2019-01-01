@@ -36,8 +36,7 @@ public class Server{
     }
 
     /**
-     * Synchronized function to update the leaderboard list so if multiple calls at one time it will be active at one point
-     * in time
+     * Synchronized function to update the leaderboard list so if multiple calls at one time it will be active on one thread
      */
     synchronized private static void updateLeaderboardList(){
         try {
