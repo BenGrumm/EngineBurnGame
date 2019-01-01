@@ -84,7 +84,6 @@ public class Server{
                         for(int i = 0; i < 10; i++){
                             out.println(leaderboardScores[i][0]);
                             out.println(leaderboardScores[i][1]);
-                            out.println(leaderboardScores[i][2]);
                         }
                     }
                     // If the input is not null and the input is the command ADD_SCORE

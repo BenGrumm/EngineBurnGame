@@ -249,7 +249,7 @@ public class LeaderboardActivity extends Activity {
         }else if(leaderBoardType.equals("Global")){
             saveScoreToGlobal(name);
             canGlobalSave = false;
-            returnIntent.putExtra(Global_Save_Extra, canLocalSave);
+            returnIntent.putExtra(Global_Save_Extra, canGlobalSave);
         }
         setResult(GameOverActivity.Leaderboard_Result, returnIntent);
         // Refresh the recycler view
@@ -378,10 +378,20 @@ public class LeaderboardActivity extends Activity {
             try {
                 Client client = new Client();
                 client.Start();
-                client.addScore(LeaderboardActivity.this, userScores[0]);
+                client.addScore(userScores[0]);
                 client.close();
             }catch (IOException ioException){
                 Log.e(TAG, "Error Connecting To Internet : " + ioException.toString());
+                // If the error is from the score not being high enough then make a toast
+                if(ioException.getMessage().equals("Score Cannot Be Added To Leaderboard")){
+                    // Toasts must be run on the ui thread as this is an async task use run on ui thread
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(LeaderboardActivity.this, "Error Adding Score To Global Database", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
             }
 
             return null;

@@ -70,13 +70,13 @@ public class Client {
 
         // For each user and then for each piece of information for that user
         for(int i = 0; i < 10; i++){
-            for(int x = 0; x < 3; x++){
+            for(int x = 0; x < 2; x++){
                 // Read the information and then store the information in the user array
                 input = in.readLine();
                 user[x] = input;
             }
             // Store the information retrieved in a UserScore class and add to userScores array
-            userScores[i] = new UserScore(user[0], user[1], user[2]);
+            userScores[i] = new UserScore(user[0], user[1], Integer.toString(i+1));
         }
 
         Log.d(TAG, "UserScores Collected " + userScores[0].getName());
@@ -89,7 +89,7 @@ public class Client {
      * @param userScore the users information to add
      * @throws IOException if there is a problem with the connection
      */
-    public void addScore(Context context, UserScore userScore) throws IOException{
+    public void addScore(UserScore userScore) throws IOException{
         // Send message to expect score
         out.println("ADD_SCORE");
 
@@ -100,7 +100,7 @@ public class Client {
         }
 
         if(in.readLine().equals("ERROR_ADDING_SCORE")){
-            Toast.makeText(context, "Error Adding Score To Global Database", Toast.LENGTH_LONG).show();
+            throw new IOException("Score Cannot Be Added To Leaderboard");
         }
     }
 
