@@ -35,8 +35,8 @@ public class DataBaseAdapter {
     public DataBaseAdapter createDatabase() throws SQLException {
         try {
             mDbHelper.createDataBase();
-        } catch (IOException mIOException) {
-            Log.e(TAG, mIOException.toString() + "  UnableToCreateDatabase");
+        } catch (Error error) {
+            Log.e(TAG, error.toString() + "  UnableToCreateDatabase");
             throw new Error("UnableToCreateDatabase");
         }
         return this;
