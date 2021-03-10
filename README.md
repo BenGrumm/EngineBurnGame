@@ -1,6 +1,6 @@
 # EngineBurnGame
 
-### Home Page &nbsp; Choose Your UFO
+### Home Page &nbsp; | &nbsp; Choose Your UFO
 <img src="https://i.imgur.com/v9K5TxN.png" height="200"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <img src="https://i.imgur.com/Z9Ns2Iv.png" height="200"> 
 ### Tap To Fly The UFO
 <img src="https://i.imgur.com/B7NQKAQ.png" height="200"> 
